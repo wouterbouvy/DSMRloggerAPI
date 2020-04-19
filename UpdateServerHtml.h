@@ -6,15 +6,15 @@ static const char UpdateServerIndex[] PROGMEM =
      </style>
      <body>
      <h1>DSMR-logger Flash utility</h1>
-     <form method='POST' action='' enctype='multipart/form-data'>
-        Selecteer een "<b>.ino.bin</b>" bestand<br/>
-        <input type='file' accept='ino.bin' name='firmware'>
-        <input type='submit' value='Flash Firmware'>
+     <form method='POST' action='?cmd=0' enctype='multipart/form-data'>
+          Selecteer een "<b>.ino.bin</b>" bestand<br/>
+          <input type='file' accept='ino.bin' name='firmware'>
+          <input type='submit' value='Flash Firmware'>
       </form>
-      <form method='POST' action='' enctype='multipart/form-data'> 
-        Selecteer een "<b>.spiffs.bin</b>" bestand<br/>
-        <input type='file' accept='spiffs.bin' name='filesystem'>
-        <input type='submit' value='Flash Spiffs'>
+      <form method='POST' action='?cmd=100' enctype='multipart/form-data'> 
+          Selecteer een "<b>.spiffs.bin</b>" bestand<br/>
+          <input type='file' accept='spiffs.bin' name='filesystem'>
+          <input type='submit' value='Flash Spiffs'>
       </form>
       <hr>
       <br/><font color='red'>Let op!!!</font>
@@ -48,7 +48,7 @@ static const char UpdateServerSuccess[] PROGMEM =
      <body>
      <h1>DSMR-logger Flash utility</h1>
      <br/>
-     <h2>Update successfull!</h2>
+     <h2>Update successful!</h2>
      <br/>
      <br/>Wait for the DSMR-logger to reboot and start the HTTP server
      <br/>

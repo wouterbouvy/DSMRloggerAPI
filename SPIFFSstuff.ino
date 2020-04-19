@@ -1,7 +1,7 @@
 /* 
 ***************************************************************************  
 **  Program  : SPIFFSstuff, part of DSMRloggerAPI
-**  Version  : v0.3.4
+**  Version  : v2.0.1
 **
 **  Copyright (c) 2020 Willem Aandewiel
 **
@@ -41,7 +41,7 @@ void readLastStatus()
   if (strlen(spiffsTimestamp) != 13) {
     strcpy(spiffsTimestamp, "010101010101X");
   }
-  sprintf(actTimestamp, "%s", spiffsTimestamp);
+  snprintf(actTimestamp, sizeof(actTimestamp), "%s", spiffsTimestamp);
   
 }  // readLastStatus()
 
@@ -49,14 +49,21 @@ void readLastStatus()
 //====================================================================
 void writeLastStatus()
 {
+  if (ESP.getFreeHeap() < 8500) // to prevent firmware from crashing!
+  {
+    DebugTf("Bailout due to low heap (%d bytes)\r\n", ESP.getFreeHeap());
+    writeToSysLog("Bailout low heap (%d bytes)", ESP.getFreeHeap());
+    return;
+  }
   char buffer[50] = "";
   DebugTf("writeLastStatus() => %s; %u; %u;\r\n", actTimestamp, nrReboots, slotErrors);
+  writeToSysLog("writeLastStatus() => %s; %u; %u;", actTimestamp, nrReboots, slotErrors);
   File _file = SPIFFS.open("/DSMRstatus.csv", "w");
   if (!_file)
   {
     DebugTln("write(): No /DSMRstatus.csv found ..");
   }
-  sprintf(buffer, "%-13.13s; %010u; %010u; %s;\n", actTimestamp
+  snprintf(buffer, sizeof(buffer), "%-13.13s; %010u; %010u; %s;\n", actTimestamp
                                           , nrReboots
                                           , slotErrors
                                           , "meta data");
@@ -76,11 +83,15 @@ bool buildDataRecordFromSM(char *recIn)
   uint16_t recSlot = timestampToHourSlot(actTimestamp, strlen(actTimestamp));
   strCopy(key, 10, actTimestamp, 0, 8);
 
-  sprintf(record, (char*)DATA_FORMAT, key , (float)DSMRdata.energy_delivered_tariff1
+  snprintf(record, sizeof(record), (char*)DATA_FORMAT, key , (float)DSMRdata.energy_delivered_tariff1
                                           , (float)DSMRdata.energy_delivered_tariff2
                                           , (float)DSMRdata.energy_returned_tariff1
                                           , (float)DSMRdata.energy_returned_tariff2
+#ifdef USE_PRE40_PROTOCOL
+                                          , (float)DSMRdata.gas_delivered2);
+#else
                                           , (float)DSMRdata.gas_delivered);
+#endif
   // DATA + \n + \0                                        
   fillRecord(record, DATA_RECLEN);
 
@@ -124,7 +135,7 @@ uint16_t buildDataRecordFromJson(char *recIn, String jsonIn)
   recSlot = timestampToMonthSlot(uKey, strlen(uKey));
  
   DebugTf("MONTHS: Write [%s] to slot[%02d] in %s\r\n", uKey, recSlot, MONTHS_FILE);
-  sprintf(record, (char*)DATA_FORMAT, uKey , (float)uEDT1
+  snprintf(record, sizeof(record), (char*)DATA_FORMAT, uKey , (float)uEDT1
                                            , (float)uEDT2
                                            , (float)uERT1
                                            , (float)uERT2
@@ -178,6 +189,7 @@ void writeDataToFile(const char *fileName, const char *record, uint16_t slot, in
   if (bytesWritten != DATA_RECLEN) 
   {
     DebugTf("ERROR! slot[%02d]: written [%d] bytes but should have been [%d]\r\n", slot, bytesWritten, DATA_RECLEN);
+    writeToSysLog("ERROR! slot[%02d]: written [%d] bytes but should have been [%d]", slot, bytesWritten, DATA_RECLEN);
   }
   dataFile.close();
 
@@ -197,7 +209,8 @@ void writeDataToFiles()
   recSlot = timestampToHourSlot(actTimestamp, strlen(actTimestamp));
   if (Verbose1) DebugTf("HOURS:  Write to slot[%02d] in %s\r\n", recSlot, HOURS_FILE);
   writeDataToFile(HOURS_FILE, record, recSlot, HOURS);
-
+  writeToSysLog("HOURS: actTimestamp[%s], recSlot[%d]", actTimestamp, recSlot);
+  
   // update DAYS
   recSlot = timestampToDaySlot(actTimestamp, strlen(actTimestamp));
   if (Verbose1) DebugTf("DAYS:   Write to slot[%02d] in %s\r\n", recSlot, DAYS_FILE);
@@ -255,6 +268,7 @@ void readOneSlot(int8_t fileType, const char *fileName, uint8_t recNr
       {
         {
           Debugf("slot[%02d]==>timeStamp [%-13.13s] not valid!!\r\n", slot, buffer);
+          writeToSysLog("slot[%02d]==>timeStamp [%-13.13s] not valid!!", slot, buffer);
         }
       }
       else
@@ -341,7 +355,7 @@ bool createFile(const char *fileName, uint16_t noSlots)
 
     File dataFile  = SPIFFS.open(fileName, "a");  // create File
     // -- first write fileHeader ----------------------------------------
-    sprintf(cMsg, "%s", DATA_CSV_HEADER);  // you cannot modify *fileHeader!!!
+    snprintf(cMsg, sizeof(cMsg), "%s", DATA_CSV_HEADER);  // you cannot modify *fileHeader!!!
     fillRecord(cMsg, DATA_RECLEN);
     DebugT(cMsg); Debugln(F("\r"));
     bytesWritten = dataFile.print(cMsg);
@@ -351,9 +365,9 @@ bool createFile(const char *fileName, uint16_t noSlots)
     }
     DebugTln(F(".. that went well! Now add next record ..\r"));
     // -- as this file is empty, write one data record ------------
-    sprintf(cMsg, "%02d%02d%02d%02d", 0, 0, 0, 0);
+    snprintf(cMsg, sizeof(cMsg), "%02d%02d%02d%02d", 0, 0, 0, 0);
     
-    sprintf(cMsg, DATA_FORMAT, cMsg, 0.000, 0.000, 0.000, 0.000, 0.000);
+    snprintf(cMsg, sizeof(cMsg), DATA_FORMAT, cMsg, 0.000, 0.000, 0.000, 0.000, 0.000);
 
     fillRecord(cMsg, DATA_RECLEN);
     for(int r = 1; r <= noSlots; r++)
@@ -592,37 +606,43 @@ bool DSMRfileExist(const char* fileName, bool doDisplay)
   strConcat(fName, 29, fileName);
   
   DebugTf("check if [%s] exists .. ", fName);
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
-  oled_Print_Msg(1, "Bestaat:", 10);
-  oled_Print_Msg(2, fName, 10);
-  oled_Print_Msg(3, "op SPIFFS?", 250);
-#endif
+  if (settingOledType > 0)
+  {
+    oled_Print_Msg(1, "Bestaat:", 10);
+    oled_Print_Msg(2, fName, 10);
+    oled_Print_Msg(3, "op SPIFFS?", 250);
+  }
 
   if (!SPIFFS.exists(fName) )
   {
     if (doDisplay)
     {
       Debugln(F("NO! Error!!"));
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
-      oled_Print_Msg(3, "Nee! FOUT!", 6000);
-#endif
+      if (settingOledType > 0)
+      {
+        oled_Print_Msg(3, "Nee! FOUT!", 6000);
+      }
+      writeToSysLog("Error! File [%s] not found!", fName);
       return false;
     }
     else
     {
       Debugln(F("NO! "));
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
-      oled_Print_Msg(3, "Nee! ", 6000);
-#endif
+      if (settingOledType > 0)
+      {
+        oled_Print_Msg(3, "Nee! ", 6000);
+      }
+      writeToSysLog("File [%s] not found!", fName);
       return false;
     }
   } 
   else 
   {
     Debugln(F("Yes! OK!"));
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
-    oled_Print_Msg(3, "JA! (OK!)", 250);
-#endif
+    if (settingOledType > 0)
+    {
+      oled_Print_Msg(3, "JA! (OK!)", 250);
+    }
   }
   return true;
   

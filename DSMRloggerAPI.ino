@@ -1,8 +1,8 @@
-  /*
+/*
 ***************************************************************************  
 **  Program  : DSMRloggerAPI (restAPI)
 */
-#define _FW_VERSION "v0.3.4 (11-02-2020)"
+#define _FW_VERSION "v2.0.1 (17-04-2020)"
 /*
 **  Copyright (c) 2020 Willem Aandewiel
 **
@@ -12,8 +12,9 @@
   Arduino-IDE settings for DSMR-logger Version 4 (ESP-12):
 
     - Board: "Generic ESP8266 Module"
+    - Builtin Led: "2"
     - Flash mode: "DOUT" | "DIO"    // change only after power-off and on again!
-    - Flash size: "4MB (FS: 2MB OAT:~1019KB)"  
+    - Flash size: "4MB (FS: 2MB OAT:~1019KB)"  << LET OP! 2MB SPIFFS
     - DebugT port: "Disabled"
     - DebugT Level: "None"
     - IwIP Variant: "v2 Lower Memory"
@@ -21,25 +22,29 @@
     - Crystal Frequency: "26 MHz" 
     - VTables: "Flash"
     - Flash Frequency: "40MHz"
-    - CPU Frequency: "80 MHz"
-    - Buildin Led: "2"  // ESP-01 (Black) GPIO01 - Pin 2 // "2" for Wemos and ESP-01S
+    - CPU Frequency: "80 MHz" (or 160MHz)
+    - Buildin Led: "2"  // GPIO02 for Wemos and ESP-12
     - Upload Speed: "115200"                                                                                                                                                                                                                                                 
     - Erase Flash: "Only Sketch"
     - Port: <select correct port>
 */
-
+/*
+**  You can find more info in the following links (all in Dutch): 
+**   https://willem.aandewiel.nl/index.php/2020/02/28/restapis-zijn-hip-nieuwe-firmware-voor-de-dsmr-logger/
+**   https://mrwheel-docs.gitbook.io/dsmrloggerapi/
+**   https://mrwheel.github.io/DSMRloggerWS/
+*/
 /******************** compiler options  ********************************************/
-#define IS_ESP12                  // define if it's a 'bare' ESP-12 (no reset/flash functionality on board)
+#define USE_REQUEST_PIN           // define if it's a esp8266 with GPIO 12 connected to SM DTR pin
 #define USE_UPDATE_SERVER         // define if there is enough memory and updateServer to be used
-#define HAS_OLED_SSD1306          // define if a 0.96" OLED display is present
-//  #define HAS_OLED_SH1106           // define if a 1.3" OLED display is present
-//  #define HAS_NO_SLIMMEMETER        // define for testing only!
+//  #define USE_BELGIUM_PROTOCOL      // define if Slimme Meter is a Belgium Smart Meter
 //  #define USE_PRE40_PROTOCOL        // define if Slimme Meter is pre DSMR 4.0 (2.2 .. 3.0)
 //  #define USE_NTP_TIME              // define to generate Timestamp from NTP (Only Winter Time for now)
-//  #define SM_HAS_NO_FASE_INFO       // if your SM does not give fase info use total delevered/returned
-#define USE_MQTT                  // define if you want to use MQTT
-#define USE_MINDERGAS             // define if you want to update mindergas (also add token down below)
-//#define SHOW_PASSWRDS             // well .. show the PSK key and MQTT password, what else?
+//  #define HAS_NO_SLIMMEMETER        // define for testing only!
+#define USE_MQTT                  // define if you want to use MQTT (configure through webinterface)
+#define USE_MINDERGAS             // define if you want to update mindergas (configure through webinterface)
+//  #define USE_SYSLOGGER             // define if you want to use the sysLog library for debugging
+//  #define SHOW_PASSWRDS             // well .. show the PSK key and MQTT password, what else?
 /******************** don't change anything below this comment **********************/
 
 #include "DSMRloggerAPI.h"
@@ -54,9 +59,9 @@ struct showValues {
       TelnetStream.print(F(": "));
       TelnetStream.print(i.val());
       TelnetStream.print(Item::unit());
-    } else 
-    {
-      TelnetStream.print(F("<no value>"));
+    //} else 
+    //{
+    //  TelnetStream.print(F("<no value>"));
     }
     TelnetStream.println();
   }
@@ -66,25 +71,69 @@ struct showValues {
 //===========================================================================================
 void displayStatus() 
 {
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
-  switch(msgMode) { 
-    case 1:   sprintf(cMsg, "Up:%15.15s", upTime().c_str());
-              break;
-    case 2:   sprintf(cMsg, "WiFi RSSI:%4d dBm", WiFi.RSSI());
-              break;
-    case 3:   sprintf(cMsg, "Heap:%7d Bytes", ESP.getFreeHeap());
-              break;
-    case 4:   sprintf(cMsg, "IP %s", WiFi.localIP().toString().c_str());
-              break;
-    default:  sprintf(cMsg, "Telgrms:%6d/%3d", telegramCount, telegramErrors);
-              break;
-  }
-  oled_Print_Msg(3, cMsg, 0);
-  msgMode= (msgMode+1) % 5; //modular 5 = number of message displayed (hence it cycles thru the messages
-#endif
-  
+  if (settingOledType > 0)
+  {
+    switch(msgMode) { 
+      case 1:   snprintf(cMsg, sizeof(cMsg), "Up:%-15.15s", upTime().c_str());
+                break;
+      case 2:   snprintf(cMsg, sizeof(cMsg), "WiFi RSSI:%4d dBm", WiFi.RSSI());
+                break;
+      case 3:   snprintf(cMsg, sizeof(cMsg), "Heap:%7d Bytes", ESP.getFreeHeap());
+                break;
+      case 4:   if (WiFi.status() != WL_CONNECTED)
+                      snprintf(cMsg, sizeof(cMsg), "**** NO  WIFI ****");
+                else  snprintf(cMsg, sizeof(cMsg), "IP %s", WiFi.localIP().toString().c_str());
+                break;
+      default:  snprintf(cMsg, sizeof(cMsg), "Telgrms:%6d/%3d", telegramCount, telegramErrors);
+                break;
+    }
+
+    oled_Print_Msg(3, cMsg, 0);
+    msgMode= (msgMode+1) % 5; //modular 5 = number of message displayed (hence it cycles thru the messages
+  }  
 } // displayStatus()
 
+
+#ifdef USE_SYSLOGGER
+//===========================================================================================
+void openSysLog(bool empty)
+{
+  if (sysLog.begin(500, 100, empty))  // 500 lines use existing sysLog file
+  {   
+    DebugTln("Succes opening sysLog!");
+    if (settingOledType > 0)
+    {
+      oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+      oled_Print_Msg(3, "Syslog OK!", 500);
+    }
+  }
+  else
+  {
+    DebugTln("Error opening sysLog!");
+    if (settingOledType > 0)
+    {
+      oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+      oled_Print_Msg(3, "Error Syslog", 1500);
+    }
+  }
+
+  sysLog.setDebugLvl(1);
+  sysLog.setOutput(&TelnetStream);
+  sysLog.status();
+  sysLog.write("\r\n");
+  for (int q=0;q<3;q++)
+  {
+    sysLog.write("******************************************************************************************************");
+  }
+  writeToSysLog("Last Reset Reason [%s]", ESP.getResetReason().c_str());
+  writeToSysLog("actTimestamp[%s], nrReboots[%u], Errors[%u]", actTimestamp
+                                                             , nrReboots
+                                                             , slotErrors);
+
+  sysLog.write(" ");
+
+} // openSysLog()
+#endif
 
 //===========================================================================================
 void setup() 
@@ -101,52 +150,61 @@ void setup()
   pinMode(DTR_ENABLE, OUTPUT);
 #endif
   
-  //setup randomseed the right way
-  randomSeed(RANDOM_REG32); //This is 8266 HWRNG used to seed the Random PRNG: Read more: https://config9.com/arduino/getting-a-truly-random-number-in-arduino/
+  //--- setup randomseed the right way
+  //--- This is 8266 HWRNG used to seed the Random PRNG
+  //--- Read more: https://config9.com/arduino/getting-a-truly-random-number-in-arduino/
+  randomSeed(RANDOM_REG32); 
+  snprintf(settingHostname, sizeof(settingHostname), "%s", _DEFAULT_HOSTNAME);
   Serial.printf("\n\nBooting....[%s]\r\n\r\n", String(_FW_VERSION).c_str());
 
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
-  oled_Init();
-  oled_Clear();  // clear the screen so we can paint the menu.
-  oled_Print_Msg(0, "<DSMRloggerAPI>", 0);
-  int8_t sPos = String(_FW_VERSION).indexOf(' ');
-  sprintf(cMsg, "(c)2019 [%s]", String(_FW_VERSION).substring(0,sPos).c_str());
-  oled_Print_Msg(1, cMsg, 0);
-  oled_Print_Msg(2, " Willem Aandewiel", 0);
-  oled_Print_Msg(3, " >> Have fun!! <<", 1000);
-  yield();
-#else  // don't blink if oled-screen attatched
-  for(int I=0; I<8; I++) 
+  if (settingOledType > 0)
   {
-    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    delay(2000);
+    oled_Init();
+    oled_Clear();  // clear the screen so we can paint the menu.
+    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+    int8_t sPos = String(_FW_VERSION).indexOf(' ');
+    snprintf(cMsg, sizeof(cMsg), "(c)2020 [%s]", String(_FW_VERSION).substring(0,sPos).c_str());
+    oled_Print_Msg(1, cMsg, 0);
+    oled_Print_Msg(2, " Willem Aandewiel", 0);
+    oled_Print_Msg(3, " >> Have fun!! <<", 1000);
+    yield();
   }
-#endif
+  else  // don't blink if oled-screen attatched
+  {
+    for(int I=0; I<8; I++) 
+    {
+      digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+      delay(500);
+    }
+  }
   digitalWrite(LED_BUILTIN, LED_OFF);  // HIGH is OFF
   lastReset     = ESP.getResetReason();
 
   startTelnet();
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
-  oled_Print_Msg(0, "<DSMRloggerAPI>", 0);
-  oled_Print_Msg(3, "telnet (poort 23)", 2500);
-#endif  // has_oled_ssd1306
-
+  if (settingOledType > 0)
+  {
+    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+    oled_Print_Msg(3, "telnet (poort 23)", 2500);
+  }
+  
 //================ SPIFFS ===========================================
-  if (!SPIFFS.begin()) {
-    DebugTln(F("SPIFFS Mount failed\r"));   // Serious problem with SPIFFS 
-    SPIFFSmounted = false;
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
-    oled_Print_Msg(0, "<DSMRloggerAPI>", 0);
-    oled_Print_Msg(3, "SPIFFS FAILED!", 2000);
-#endif  // has_oled_ssd1306
-    
-  } else { 
+  if (SPIFFS.begin()) 
+  {
     DebugTln(F("SPIFFS Mount succesfull\r"));
     SPIFFSmounted = true;
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
-    oled_Print_Msg(0, "<DSMRloggerAPI>", 0);
-    oled_Print_Msg(3, "SPIFFS mounted", 1500);
-#endif  // has_oled_ssd1306
+    if (settingOledType > 0)
+    {
+      oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+      oled_Print_Msg(3, "SPIFFS mounted", 1500);
+    }    
+  } else { 
+    DebugTln(F("SPIFFS Mount failed\r"));   // Serious problem with SPIFFS 
+    SPIFFSmounted = false;
+    if (settingOledType > 0)
+    {
+      oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+      oled_Print_Msg(3, "SPIFFS FAILED!", 2000);
+    }
   }
 
 //------ read status file for last Timestamp --------------------
@@ -159,31 +217,34 @@ void setup()
   actT = epoch(actTimestamp, strlen(actTimestamp), true);
   DebugTf("===> actTimestamp[%s]-> nrReboots[%u] - Errors[%u]\r\n\n", actTimestamp
                                                                     , nrReboots++
-                                                                    , slotErrors);
-                                                                    
+                                                                    , slotErrors);                                                                    
   readSettings(true);
-
+  oled_Init();
+  
 //=============start Networkstuff==================================
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
-  oled_Clear();  // clear the screen 
-  oled_Print_Msg(0, "<DSMRloggerAPI>", 0);
-  oled_Print_Msg(1, "Verbinden met WiFi", 500);
-#endif  // has_oled_ssd1306
-
+  if (settingOledType > 0)
+  {
+    if (settingOledFlip)  oled_Init();  // only if true restart(init) oled screen
+    oled_Clear();                       // clear the screen 
+    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+    oled_Print_Msg(1, "Verbinden met WiFi", 500);
+  }
   digitalWrite(LED_BUILTIN, LED_ON);
-  startWiFi();
+  startWiFi(settingHostname, 240);  // timeout 4 minuten
 
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
-  oled_Print_Msg(0, "<DSMRloggerAPI>", 0);
-  oled_Print_Msg(1, WiFi.SSID(), 0);
-  sprintf(cMsg, "IP %s", WiFi.localIP().toString().c_str());
-  oled_Print_Msg(2, cMsg, 1500);
-#endif  // has_oled_ssd1306
+  if (settingOledType > 0)
+  {
+    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+    oled_Print_Msg(1, WiFi.SSID(), 0);
+    snprintf(cMsg, sizeof(cMsg), "IP %s", WiFi.localIP().toString().c_str());
+    oled_Print_Msg(2, cMsg, 1500);
+  }
   digitalWrite(LED_BUILTIN, LED_OFF);
   
   Debugln();
   Debug (F("Connected to " )); Debugln (WiFi.SSID());
   Debug (F("IP address: " ));  Debugln (WiFi.localIP());
+  Debug (F("IP gateway: " ));  Debugln (WiFi.gatewayIP());
   Debugln();
 
   for (int L=0; L < 10; L++) {
@@ -192,42 +253,56 @@ void setup()
   }
   digitalWrite(LED_BUILTIN, LED_OFF);
 
-  startMDNS(_HOSTNAME);
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
-  oled_Print_Msg(3, "mDNS gestart", 1500);
-#endif  // has_oled_ssd1306
+//-----------------------------------------------------------------
+#ifdef USE_SYSLOGGER
+  openSysLog(false);
+  snprintf(cMsg, sizeof(cMsg), "SSID:[%s],  IP:[%s], Gateway:[%s]", WiFi.SSID().c_str()
+                                                                  , WiFi.localIP().toString().c_str()
+                                                                  , WiFi.gatewayIP().toString().c_str());
+  writeToSysLog("%s", cMsg);
 
+#endif
+
+  startMDNS(settingHostname);
+  if (settingOledType > 0)
+  {
+    oled_Print_Msg(3, "mDNS gestart", 1500);
+  }
+  
 //=============end Networkstuff======================================
 
 #if defined(USE_NTP_TIME)                                   //USE_NTP
 //================ startNTP =========================================
-  #if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )  
+  if (settingOledType > 0)                                  //USE_NTP
+  {                                                         //USE_NTP
     oled_Print_Msg(3, "setup NTP server", 100);             //USE_NTP
-  #endif  // has_oled_ssd1306                               //USE_NTP
+  }                                                         //USE_NTP
                                                             //USE_NTP
   if (!startNTP())                                          //USE_NTP
   {                                                         //USE_NTP
     DebugTln(F("ERROR!!! No NTP server reached!\r\n\r"));   //USE_NTP
-  #if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 ) 
-    oled_Print_Msg(0, "<DSMRloggerAPI>", 0);                //USE_NTP
-    oled_Print_Msg(2, "geen reactie van", 100);             //USE_NTP
-    oled_Print_Msg(2, "NTP server's", 100);                 //USE_NTP 
-    oled_Print_Msg(3, "Reboot DSMR-logger", 2000);          //USE_NTP
-  #endif  // has_oled_ssd1306                               //USE_NTP
+    if (settingOledType > 0)                                //USE_NTP
+    {                                                       //USE_NTP
+      oled_Print_Msg(0, " <DSMRloggerAPI>", 0);              //USE_NTP
+      oled_Print_Msg(2, "geen reactie van", 100);           //USE_NTP
+      oled_Print_Msg(2, "NTP server's", 100);               //USE_NTP 
+      oled_Print_Msg(3, "Reboot DSMR-logger", 2000);        //USE_NTP
+    }                                                       //USE_NTP
     delay(2000);                                            //USE_NTP
     ESP.restart();                                          //USE_NTP
     delay(3000);                                            //USE_NTP
   }                                                         //USE_NTP
-  #if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 ) 
-    oled_Print_Msg(0, "<DSMRloggerAPI>", 0);                //USE_NTP
+  if (settingOledType > 0)                                  //USE_NTP
+  {                                                         //USE_NTP
+    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);                //USE_NTP
     oled_Print_Msg(3, "NTP gestart", 1500);                 //USE_NTP
-    prevNtpHour = hour();                                   //USE_NTP
-  #endif                                                    //USE_NTP
+  }                                                         //USE_NTP
+  prevNtpHour = hour();                                     //USE_NTP
                                                             //USE_NTP
 #endif  //USE_NTP_TIME                                      //USE_NTP
 //================ end NTP =========================================
 
-  sprintf(cMsg, "Last reset reason: [%s]\r", ESP.getResetReason().c_str());
+  snprintf(cMsg, sizeof(cMsg), "Last reset reason: [%s]\r", ESP.getResetReason().c_str());
   DebugTln(cMsg);
 
   Serial.print("\nGebruik 'telnet ");
@@ -247,19 +322,17 @@ void setup()
       }
       hasAlternativeIndex        = true;
     }
-    else  hasAlternativeIndex        = false;
+    else  hasAlternativeIndex    = false;
   }
   if (!hasAlternativeIndex && !DSMRfileExist("/DSMRindex.html", false) )
   {
     spiffsNotPopulated = true;
   }
-  if (!hasAlternativeIndex)
+  if (!hasAlternativeIndex)    //--- there's no alternative index.html
   {
     DSMRfileExist("/DSMRindex.js",    false);
     DSMRfileExist("/DSMRindex.css",   false);
     DSMRfileExist("/DSMRgraphics.js", false);
-    DSMRfileExist("/DSMReditor.html", false);
-    DSMRfileExist("/DSMReditor.js",   false);
   }
   if (!DSMRfileExist("/FSexplorer.html", true))
   {
@@ -270,11 +343,16 @@ void setup()
     spiffsNotPopulated = true;
   }
 //=============end SPIFFS =========================================
-
+#ifdef USE_SYSLOGGER
+  if (spiffsNotPopulated)
+  {
+    sysLog.write("SPIFFS is not correct populated (files are missing)");
+  }
+#endif
   
 //=============now test if "convertPRD" file exists================
 
-  if (DSMRfileExist("!PRDconvert", false) )
+  if (SPIFFS.exists("/!PRDconvert") )
   {
     convertPRD2RING();
   }
@@ -283,27 +361,31 @@ void setup()
 
 #if defined(USE_NTP_TIME)                                                           //USE_NTP
   time_t t = now(); // store the current time in time variable t                    //USE_NTP
-  sprintf(cMsg, "%02d%02d%02d%02d%02d%02dW\0\0", (year(t) - 2000), month(t), day(t) //USE_NTP
+  snprintf(cMsg, sizeof(cMsg), "%02d%02d%02d%02d%02d%02dW\0\0"                      //USE_NTP
+                                               , (year(t) - 2000), month(t), day(t) //USE_NTP
                                                , hour(t), minute(t), second(t));    //USE_NTP
   pTimestamp = cMsg;                                                                //USE_NTP
   DebugTf("Time is set to [%s] from NTP\r\n", cMsg);                                //USE_NTP
 #endif  // use_dsmr_30
 
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
-  sprintf(cMsg, "DT: %02d%02d%02d%02d0101W", thisYear, thisMonth, thisDay, thisHour);
-  oled_Print_Msg(0, "<DSMRloggerAPI>", 0);
-  oled_Print_Msg(3, cMsg, 1500);
-#endif  // has_oled_ssd1306
+  if (settingOledType > 0)
+  {
+    snprintf(cMsg, sizeof(cMsg), "DT: %02d%02d%02d%02d0101W", thisYear
+                                                            , thisMonth, thisDay, thisHour);
+    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+    oled_Print_Msg(3, cMsg, 1500);
+  }
 
 //================ Start MQTT  ======================================
 
-#ifdef USE_MQTT                                               //USE_MQTT
-  startMQTT();
-  #if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )    //USE_MQTT
-    oled_Print_Msg(0, "<DSMRloggerAPI>", 0);               //USE_MQTT
-    oled_Print_Msg(3, "MQTT server set!", 1500);              //USE_MQTT
-  #endif  // has_oled_ssd1306                                 //USE_MQTT
-#endif                                                        //USE_MQTT
+#ifdef USE_MQTT                                                 //USE_MQTT
+  connectMQTT();                                                //USE_MQTT
+  if (settingOledType > 0)                                      //USE_MQTT
+  {                                                             //USE_MQTT
+    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);                    //USE_MQTT
+    oled_Print_Msg(3, "MQTT server set!", 1500);                //USE_MQTT
+  }                                                             //USE_MQTT
+#endif                                                          //USE_MQTT
 
 //================ End of Start MQTT  ===============================
 
@@ -312,17 +394,19 @@ void setup()
 
   if (!spiffsNotPopulated) {
     DebugTln(F("SPIFFS correct populated -> normal operation!\r"));
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
-    oled_Print_Msg(0, "<DSMRloggerAPI>", 0); 
-    oled_Print_Msg(1, "OK, SPIFFS correct", 0);
-    oled_Print_Msg(2, "Verder met normale", 0);
-    oled_Print_Msg(3, "Verwerking ;-)", 2500);
-#endif  // has_oled_ssd1306
+    if (settingOledType > 0)
+    {
+      oled_Print_Msg(0, " <DSMRloggerAPI>", 0); 
+      oled_Print_Msg(1, "OK, SPIFFS correct", 0);
+      oled_Print_Msg(2, "Verder met normale", 0);
+      oled_Print_Msg(3, "Verwerking ;-)", 2500);
+    }
     if (hasAlternativeIndex)
     {
       httpServer.serveStatic("/",                 SPIFFS, settingIndexPage);
       httpServer.serveStatic("/index",            SPIFFS, settingIndexPage);
       httpServer.serveStatic("/index.html",       SPIFFS, settingIndexPage);
+      httpServer.serveStatic("/DSMRindex.html",   SPIFFS, settingIndexPage);
     }
     else
     {
@@ -332,19 +416,18 @@ void setup()
       httpServer.serveStatic("/index.html",       SPIFFS, "/DSMRindex.html");
       httpServer.serveStatic("/DSMRindex.css",    SPIFFS, "/DSMRindex.css");
       httpServer.serveStatic("/DSMRindex.js",     SPIFFS, "/DSMRindex.js");
-      httpServer.serveStatic("/DSMReditor.html",  SPIFFS, "/DSMReditor.html");
-      httpServer.serveStatic("/DSMReditor.js",    SPIFFS, "/DSMReditor.js");
       httpServer.serveStatic("/DSMRgraphics.js",  SPIFFS, "/DSMRgraphics.js");
     }
   } else {
     DebugTln(F("Oeps! not all files found on SPIFFS -> present FSexplorer!\r"));
     spiffsNotPopulated = true;
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
-    oled_Print_Msg(0, "!OEPS! niet alle", 0);
-    oled_Print_Msg(1, "files op SPIFFS", 0);
-    oled_Print_Msg(2, "gevonden! (fout!)", 0);
-    oled_Print_Msg(3, "Start FSexplorer", 2000);
-#endif  // has_oled_ssd1306
+    if (settingOledType > 0)
+    {
+      oled_Print_Msg(0, "!OEPS! niet alle", 0);
+      oled_Print_Msg(1, "files op SPIFFS", 0);
+      oled_Print_Msg(2, "gevonden! (fout!)", 0);
+      oled_Print_Msg(3, "Start FSexplorer", 2000);
+    }
   }
 
   setupFSexplorer();
@@ -355,12 +438,13 @@ void setup()
 
   httpServer.begin();
   DebugTln( "HTTP server gestart\r" );
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )    //HAS_OLED
-  oled_Clear();                                             //HAS_OLED
-  oled_Print_Msg(0, "<DSMRloggerAPI>", 0);               //HAS_OLED
-  oled_Print_Msg(2, "HTTP server ..", 0);                   //HAS_OLED
-  oled_Print_Msg(3, "gestart (poort 80)", 0);               //HAS_OLED
-#endif  // has_oled_ssd1306                                 //HAS_OLED
+  if (settingOledType > 0)                                  //HAS_OLED
+  {                                                         //HAS_OLED
+    oled_Clear();                                           //HAS_OLED
+    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);                //HAS_OLED
+    oled_Print_Msg(2, "HTTP server ..", 0);                 //HAS_OLED
+    oled_Print_Msg(3, "gestart (poort 80)", 0);             //HAS_OLED
+  }                                                         //HAS_OLED
 
   for (int i = 0; i< 10; i++) 
   {
@@ -369,56 +453,46 @@ void setup()
   }
 //================ Start HTTP Server ================================
 
-//================ Start Slimme Meter ===============================
-
-  DebugTln(F("Enable slimmeMeter..\r"));
-  delay(100);
-  slimmeMeter.enable(true);
-
   //test(); monthTabel
+  
+#ifdef USE_MINDERGAS
+    handleMindergas();
+#endif
 
   DebugTf("Startup complete! actTimestamp[%s]\r\n", actTimestamp);  
-
-#if defined( IS_ESP12 ) && !defined( HAS_NO_SLIMMEMETER )
-    Serial.swap();
-#endif // is_esp12
-
+  writeToSysLog("Startup complete! actTimestamp[%s]", actTimestamp);  
 
 //================ End of Slimmer Meter ============================
 
 
 //================ The final part of the Setup =====================
 
-  sprintf(cMsg, "Last reset reason: [%s]\r", ESP.getResetReason().c_str());
+  snprintf(cMsg, sizeof(cMsg), "Last reset reason: [%s]\r", ESP.getResetReason().c_str());
   DebugTln(cMsg);
 
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
+  if (settingOledType > 0)
+  {
     oled_Print_Msg(0, "<DSMRloggerAPI>", 0);
     oled_Print_Msg(1, "Startup complete", 0);
     oled_Print_Msg(2, "Wait for first", 0);
     oled_Print_Msg(3, "telegram .....", 500);
-#endif  // has_oled_ssd1306
+  }
+
+//================ Start Slimme Meter ===============================
+
+  DebugTln(F("Enable slimmeMeter..\r"));
+
+#if defined( USE_REQUEST_PIN ) && !defined( HAS_NO_SLIMMEMETER )
+    DebugTf("Swapping serial port to Smart Meter, debug output will continue on telnet\r\n");
+    DebugFlush();
+    Serial.swap();
+#endif // is_esp12
+
+  delay(100);
+  slimmeMeter.enable(true);
 
 } // setup()
 
-
-//===[ blink status led in ms ]===========================================================
-DECLARE_TIMER_MS(timerBlink, 1);
-void blinkLEDms(uint32_t iDelay)
-{
-  //blink the statusled, when time passed... #non-blocking blink
-  CHANGE_INTERVAL_MS(timerBlink, iDelay);
-  if (DUE(timerBlink))
-    blinkLEDnow();
-}
-
-//===[ blink status now ]=================================================================
-void blinkLEDnow()
-{
-    pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    
-} // blinkLEDnow()
 
 //===[ no-blocking delay with running background tasks in ms ]============================
 DECLARE_TIMER_MS(timer_delay_ms, 1);
@@ -427,116 +501,120 @@ void delayms(unsigned long delay_ms)
   CHANGE_INTERVAL_MS(timer_delay_ms, delay_ms);
   RESTART_TIMER(timer_delay_ms);
   while (!DUE(timer_delay_ms))
-    doBackgroundTasks();
+  {
+    doSystemTasks();
+  }
     
 } // delayms()
 
 //========================================================================================
 
-//===[ Do task every 100ms ]==============================================================
-void doTaskEvery100ms()
-{
-  //if (Verbose1) DebugTln("doTaskEvery100ms");
-  //== do tasks ==
-} // doTaskEvery100ms()
-
-//===[ Do task every 1s ]=================================================================
-void doTaskEvery1s()
-{
-  if (Verbose2) DebugTln("doTaskEvery1s");
-  //== do tasks ==
-  upTimeSeconds++;
-  
-} // doTaskEvery1s()
-
-//===[ Do task every 5s ]=================================================================
-void doTaskEvery5s()
-{
-  if (Verbose2) DebugTln("doTaskEvery5s");
-  //== do tasks ==
-  #if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
-    displayStatus();
-  #endif
-}
-
-//===[ Do task every 30s ]=================================================================
-void doTaskEvery30s()
-{
-  if (Verbose2) DebugTln("doTaskEvery30s");
-  //== do tasks ==
-  #if defined(USE_NTP_TIME)                                                         //USE_NTP
-  if (timeStatus() == timeNeedsSync || prevNtpHour != hour())                     //USE_NTP
-  {                                                                               //USE_NTP
-    prevNtpHour = hour();                                                         //USE_NTP
-    setSyncProvider(getNtpTime);                                                  //USE_NTP
-    setSyncInterval(600);                                                         //USE_NTP
-  }                                                                               //USE_NTP
-  #endif                                                                            //USE_NTP
-}
-
-
 //==[ Do Telegram Processing ]===============================================================
 void doTaskTelegram()
 {
-  if (Verbose2) DebugTln("doTaskTelegram");
+  if (Verbose1) DebugTln("doTaskTelegram");
   #if defined(HAS_NO_SLIMMEMETER)
     handleTestdata();
   #else
-    //-- handle slimmemeter telegrams in normal mode
-    slimmeMeter.enable(true); // enable a telegram processing from slimme meter
+    //-- enable DTR to read a telegram from the Slimme Meter
+    slimmeMeter.enable(true); 
+    slimmeMeter.loop();
+    handleSlimmemeter();
   #endif
-  blinkLEDnow();
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    for(int b=0; b<10; b++) { digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN)); delay(75);}
+  }
+  digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
 }
 
-//===[ Do the background tasks ]=============================================================
-void doBackgroundTasks()
+//===[ Do System tasks ]=============================================================
+void doSystemTasks()
 {
   #ifndef HAS_NO_SLIMMEMETER
-    handleSlimmemeter();
+    slimmeMeter.loop();
+  #endif
+  #ifdef USE_MQTT
+    MQTTclient.loop();
   #endif
   httpServer.handleClient();
   MDNS.update();
   handleKeyInput();
-  handleMQTT();                 // MQTT transmissions
-  handleMindergas();            // Mindergas update 
-#if defined( HAS_OLED_SSD1306 ) || defined( HAS_OLED_SH1106 )
-  checkFlashButton();
-#endif
+  if (settingOledType > 0)
+  {
+    checkFlashButton();
+  }
+
   yield();
 
-} // doBackgroundTasks()
+} // doSystemTasks()
 
-//===========================================================================================
-// setup timers for main loop (* delibratly left here, it's just more clear imho *)
-DECLARE_TIMER_MS(timer100ms, 100)
-DECLARE_TIMER_SEC(timer1s, 1)
-DECLARE_TIMER_SEC(timer5s, 5)
-DECLARE_TIMER_SEC(timer30s, 30)
-DECLARE_TIMER_SEC(timerTelegram, 10)
   
 void loop () 
 {  
-  // do the loop...
+  //--- do the tasks that has to be done 
+  //--- as often as possible
+  doSystemTasks();
+
   loopCount++;
 
-  // check the timers?
-  if DUE(timer100ms)
-    doTaskEvery100ms();
-
-  if DUE(timer1s)
-    doTaskEvery1s();
-
-  if DUE(timer5s)
-    doTaskEvery5s();
-
-  if DUE(timer30s)
-    doTaskEvery30s();
-
-  if DUE(timerTelegram) 
+  //--- verwerk volgend telegram
+  if DUE(nextTelegram)
+  {
     doTaskTelegram();
+  }
 
-  // do the background tasks
-  doBackgroundTasks();
+  //--- update upTime counter
+  if DUE(updateSeconds)
+  {
+    upTimeSeconds++;
+  }
+
+//--- if an OLED screen attached, display the status
+  if (settingOledType > 0)
+  {
+    if DUE(updateDisplay)
+    {
+      displayStatus();
+    }
+  }
+
+//--- if mindergas then check
+#ifdef USE_MINDERGAS
+  if ( DUE(minderGasTimer) )
+  {
+    handleMindergas();
+  }
+#endif
+
+  //--- if connection lost, try to reconnect to WiFi
+  if ( DUE(reconnectWiFi) && (WiFi.status() != WL_CONNECTED) )
+  {
+    writeToSysLog("Restart wifi with [%s]...", settingHostname);
+    startWiFi(settingHostname, 10);
+    if (WiFi.status() != WL_CONNECTED)
+          writeToSysLog("%s", "Wifi still not connected!");
+    else {
+          snprintf(cMsg, sizeof(cMsg), "IP:[%s], Gateway:[%s]", WiFi.localIP().toString().c_str()
+                                                              , WiFi.gatewayIP().toString().c_str());
+          writeToSysLog("%s", cMsg);
+    }
+  }
+
+//--- if NTP set, see if it needs synchronizing
+#if defined(USE_NTP_TIME)                                           //USE_NTP
+  if DUE(synchrNTP)                                                 //USE_NTP
+  {
+  //if (timeStatus() == timeNeedsSync || prevNtpHour != hour())     //USE_NTP
+  //{
+      //prevNtpHour = hour();                                         //USE_NTP
+      setSyncProvider(getNtpTime);                                  //USE_NTP
+      setSyncInterval(600);                                         //USE_NTP
+  //}
+  }
+#endif                                                              //USE_NTP
+  
+  yield();
   
 } // loop()
 
