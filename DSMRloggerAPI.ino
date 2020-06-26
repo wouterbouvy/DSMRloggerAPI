@@ -2,7 +2,7 @@
 ***************************************************************************  
 **  Program  : DSMRloggerAPI (restAPI)
 */
-#define _FW_VERSION "v2.0.1 (17-04-2020)"
+#define _FW_VERSION "v2.0.2 (26-06-2020)"
 /*
 **  Copyright (c) 2020 Willem Aandewiel
 **
@@ -42,6 +42,7 @@
 //  #define USE_NTP_TIME              // define to generate Timestamp from NTP (Only Winter Time for now)
 //  #define HAS_NO_SLIMMEMETER        // define for testing only!
 #define USE_MQTT                  // define if you want to use MQTT (configure through webinterface)
+#define USE_INFLUXDB                  // define if you want to use Influxdb (configure through webinterface)
 #define USE_MINDERGAS             // define if you want to update mindergas (configure through webinterface)
 //  #define USE_SYSLOGGER             // define if you want to use the sysLog library for debugging
 //  #define SHOW_PASSWRDS             // well .. show the PSK key and MQTT password, what else?
@@ -464,6 +465,13 @@ void setup()
 
 //================ End of Slimmer Meter ============================
 
+//================ Start InfluxDB  =================================
+
+#ifdef USE_INFLUXDB
+  initInfluxDB();
+#endif
+
+//================ End of InfluxDB ================================
 
 //================ The final part of the Setup =====================
 
@@ -562,7 +570,9 @@ void loop ()
   if DUE(nextTelegram)
   {
     doTaskTelegram();
-  }
+    #ifdef USE_INFLUXDB
+      handleInfluxDB();
+    #endif  }
 
   //--- update upTime counter
   if DUE(updateSeconds)
