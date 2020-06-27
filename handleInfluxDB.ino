@@ -73,7 +73,7 @@ struct writeInfluxDataPoints {
       {
         //when there is a unit, then it is a measurement
         Point pointItem(Item::unit());
-        pointItem.setTime(thisEpoch);
+//        pointItem.setTime(thisEpoch);
         pointItem.addTag("instance",Item::name);     
         pointItem.addField("value", i.val());
 //        pointItem.addField((String)(Item::name), i.val());
