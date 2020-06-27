@@ -51,41 +51,36 @@ void initInfluxDB()
 struct writeInfluxDataPoints {
   template<typename Item>
   void apply(Item &i) {
-    Point pointItem(settingHostname);
-    pointItem.clearTags();
-    pointItem.clearFields();
+    
     if (i.present()) 
     {
       if (strlen(Item::unit()) != 0) 
       {
-        pointItem.addTag(Item::unit(),Item::name);
-      } 
-      else 
-      {        
-        pointItem.addTag("#",Item::name);
-      }
-      
-      pointItem.addField("value", i.val());
-      DebugT("Writing to influxdb:");
-      Debugln(pointItem.toLineProtocol());
+        //when there is a unit, then it is a measurement
+        Point pointItem(Item::unit());
+        pointItem.addTag("instance",Item::name);     
+        pointItem.addField("value", i.val());
+//        pointItem.addField((String)(Item::name), i.val());
+        DebugT("Writing to influxdb:");
+        Debugln(pointItem.toLineProtocol());
+        if (!client.writePoint(pointItem)) {
+          DebugT("InfluxDB write failed: ");
+          Debugln(client.getLastErrorMessage());
+        }
+      }//writing to influxdb      
     }
-    if (!client.writePoint(pointItem)) {
-      DebugT("InfluxDB write failed: ");
-      Debugln(client.getLastErrorMessage());
-    }
-//    pointItem.empty();
   }
 };
 
 void handleInfluxDB()
 {
-  // Enable messages batching
-  //client.setWriteOptions(WritePrecision::MS, 10, 60);
+//  // Enable messages batching
+//  //client.setWriteOptions(WritePrecision::MS, 10, 60);
   DSMRdata.applyEach(writeInfluxDataPoints());
-  // Check whether buffer in not empty
-  //if (!client.isBufferEmpty()) {
-     // Write all remaining points to db
-  //client.flushBuffer();
- }
-  
+//  // Check whether buffer in not empty
+//  //if (!client.isBufferEmpty()) {
+//     // Write all remaining points to db
+//  //client.flushBuffer();
+// }
+//  
 }
