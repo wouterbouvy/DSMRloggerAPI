@@ -9,7 +9,8 @@
 ***************************************************************************      
 */  
 
-#include <TimeLib.h>            // https://github.com/PaulStoffregen/Time
+//#include <TimeLib.h>            // https://github.com/PaulStoffregen/Time
+#include <ezTime.h>             // https://github.com/ropg/ezTime
 #include <TelnetStream.h>       // https://github.com/jandrassy/TelnetStream/commit/1294a9ee5cc9b1f7e51005091e351d60c8cddecf
 #include "safeTimers.h"
 
@@ -190,7 +191,7 @@ void delayms(unsigned long);
   uint32_t    telegramCount = 0, telegramErrors = 0;
   bool        showRaw = false;
   int8_t      showRawCount = 0;
-
+  Timezone    localTZ;
 
 #ifdef USE_MQTT
   #include <PubSubClient.h>           // MQTT client publish and subscribe functionality

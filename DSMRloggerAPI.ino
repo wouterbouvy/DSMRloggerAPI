@@ -2,7 +2,7 @@
 ***************************************************************************  
 **  Program  : DSMRloggerAPI (restAPI)
 */
-#define _FW_VERSION "v2.0.3 (26-06-2020)"
+#define _FW_VERSION "v2.0.3 (28-06-2020)"
 /*
 **  Copyright (c) 2020 Willem Aandewiel
 **
@@ -150,6 +150,11 @@ void setup()
 #ifdef DTR_ENABLE
   pinMode(DTR_ENABLE, OUTPUT);
 #endif
+
+  //-- setup timezone
+  localTZ.setLocation("Europe/Amsterdam");
+  localTZ.setDefault();
+  Serial.println("Amsterdam time: " + localTZ.dateTime());
   
   //--- setup randomseed the right way
   //--- This is 8266 HWRNG used to seed the Random PRNG
