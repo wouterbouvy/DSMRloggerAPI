@@ -32,6 +32,19 @@
 // InfluxDB client instance for InfluxDB 1
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB_NAME);
 
+// Set timezone string according to https://www.gnu.org/software/libc/manual/html_node/TZ-Variable.html
+// Examples:
+//  Pacific Time:   "PST8PDT"
+//  Eastern:        "EST5EDT"
+//  Japanesse:      "JST-9"
+//  Central Europe: "CET-1CEST,M3.5.0,M10.5.0/3"
+#define TZ_INFO "CET-1CEST,M3.5.0,M10.5.0/3"
+#define WRITE_PRECISION WritePrecision::S
+#define MAX_BATCH_SIZE 16
+#define WRITE_BUFFER_SIZE 32
+
+time_t thisEpoch;
+
 void initInfluxDB()
 {
   // Set InfluxDB 1 authentication params
@@ -46,7 +59,9 @@ void initInfluxDB()
     Serial.print("InfluxDB connection failed: ");
     Serial.println(client.getLastErrorMessage());
   }
-  
+    
+  //Enable messages batching and retry buffer
+//  client.setWriteOptions(WRITE_PRECISION, MAX_BATCH_SIZE, WRITE_BUFFER_SIZE);
 }
 struct writeInfluxDataPoints {
   template<typename Item>
@@ -58,6 +73,7 @@ struct writeInfluxDataPoints {
       {
         //when there is a unit, then it is a measurement
         Point pointItem(Item::unit());
+        pointItem.setTime(thisEpoch);
         pointItem.addTag("instance",Item::name);     
         pointItem.addField("value", i.val());
 //        pointItem.addField((String)(Item::name), i.val());
@@ -74,13 +90,27 @@ struct writeInfluxDataPoints {
 
 void handleInfluxDB()
 {
-//  // Enable messages batching
-//  //client.setWriteOptions(WritePrecision::MS, 10, 60);
-  DSMRdata.applyEach(writeInfluxDataPoints());
-//  // Check whether buffer in not empty
-//  //if (!client.isBufferEmpty()) {
-//     // Write all remaining points to db
-//  //client.flushBuffer();
-// }
-//  
+  static uint32_t lastTelegram = 0;
+//   DebugTf("telegramCount=[%d] telegramErrors=[%d] lastTelegram=[%d]\r\n", telegramCount, telegramErrors, lastTelegram);
+  
+//  if ((telegramCount - telegramErrors) > 1) 
+//  {
+//    Debugln("InfluxDB: Waiting for first telegram...");  
+//    return;
+//  }
+  if ((telegramCount - lastTelegram)> 0)
+  {
+    //New telegram received, let's forward that to influxDB
+    lastTelegram = telegramCount;
+    //Setup the timestamp for this telegram, so all points for this batch are the same.
+    thisEpoch = now();  
+    DebugTf("Epoc = %d\r\n", (int)now());
+    DSMRdata.applyEach(writeInfluxDataPoints());
+    // Check whether buffer in not empty
+    if (!client.isBufferEmpty()) {
+      // Write all remaining points to db
+      client.flushBuffer();
+    }
+  }
+  
 }
