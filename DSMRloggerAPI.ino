@@ -2,7 +2,7 @@
 ***************************************************************************  
 **  Program  : DSMRloggerAPI (restAPI)
 */
-#define _FW_VERSION "v2.0.1 (17-04-2020)"
+#define _FW_VERSION "v2.0.3 (26-06-2020)"
 /*
 **  Copyright (c) 2020 Willem Aandewiel
 **
@@ -41,6 +41,7 @@
 //  #define USE_PRE40_PROTOCOL        // define if Slimme Meter is pre DSMR 4.0 (2.2 .. 3.0)
 //  #define USE_NTP_TIME              // define to generate Timestamp from NTP (Only Winter Time for now)
 //  #define HAS_NO_SLIMMEMETER        // define for testing only!
+#define USE_INFLUXDB                  // define if you want to use Influxdb (configure through webinterface)
 #define USE_MQTT                  // define if you want to use MQTT (configure through webinterface)
 #define USE_MINDERGAS             // define if you want to update mindergas (configure through webinterface)
 //  #define USE_SYSLOGGER             // define if you want to use the sysLog library for debugging
@@ -462,7 +463,14 @@ void setup()
   DebugTf("Startup complete! actTimestamp[%s]\r\n", actTimestamp);  
   writeToSysLog("Startup complete! actTimestamp[%s]", actTimestamp);  
 
-//================ End of Slimmer Meter ============================
+
+//================ Start InfluxDB  =================================
+
+#ifdef USE_INFLUXDB
+  initInfluxDB();
+#endif
+
+//================ End of InfluxDB ================================
 
 
 //================ The final part of the Setup =====================
@@ -490,7 +498,7 @@ void setup()
 
   delay(100);
   slimmeMeter.enable(true);
-
+//================ End of Slimmer Meter ============================
 } // setup()
 
 
@@ -562,6 +570,9 @@ void loop ()
   if DUE(nextTelegram)
   {
     doTaskTelegram();
+    #ifdef USE_INFLUXDB
+      handleInfluxDB();
+    #endif
   }
 
   //--- update upTime counter
