@@ -49,7 +49,7 @@ void readLastStatus()
 //====================================================================
 void writeLastStatus()
 {
-  if (ESP.getFreeHeap() < 8500) // to prevent firmware from crashing!
+  if (ESP.getFreeHeap() < 7000) // to prevent firmware from crashing!
   {
     DebugTf("Bailout due to low heap (%d bytes)\r\n", ESP.getFreeHeap());
     writeToSysLog("Bailout low heap (%d bytes)", ESP.getFreeHeap());

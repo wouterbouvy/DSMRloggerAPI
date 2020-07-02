@@ -55,7 +55,7 @@ void processAPI()
 #ifdef USE_SYSLOGGER
   if (ESP.getFreeHeap() < 5000) // to prevent firmware from crashing!
 #else
-  if (ESP.getFreeHeap() < 8500) // to prevent firmware from crashing!
+  if (ESP.getFreeHeap() < 7000) // to prevent firmware from crashing!
 #endif
   {
     DebugTf("==> Bailout due to low heap (%d bytes))\r\n", ESP.getFreeHeap() );

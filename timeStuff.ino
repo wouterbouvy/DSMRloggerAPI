@@ -170,11 +170,16 @@ time_t epoch(const char *timeStamp, int8_t len, bool syncTime)
          ,MonthFromTimestamp(fullTimeStamp)
          ,YearFromTimestamp(fullTimeStamp));
 
+  
   nT = now();
   if (!syncTime)
   {
     setTime(savEpoch);
   }
+
+  DebugT("Amsterdam time:");Debugln(localTZ.dateTime());
+  DebugT("UTC       time:");Debugln(UTC.dateTime());
+
   return nT;
 
 } // epoch()

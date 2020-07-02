@@ -150,11 +150,6 @@ void setup()
 #ifdef DTR_ENABLE
   pinMode(DTR_ENABLE, OUTPUT);
 #endif
-
-  //-- setup timezone
-  localTZ.setLocation("Europe/Amsterdam");
-  localTZ.setDefault();
-  Serial.println("Amsterdam time: " + localTZ.dateTime());
   
   //--- setup randomseed the right way
   //--- This is 8266 HWRNG used to seed the Random PRNG
@@ -469,6 +464,15 @@ void setup()
   writeToSysLog("Startup complete! actTimestamp[%s]", actTimestamp);  
 
 
+//================ Start Timezone ==================================
+  //-- setup timezone
+  //localTZ.setLocation("Europe/Amsterdam");
+  localTZ.setPosix("CET-1CEST,M3.5.0,M10.5.0/3"); //Europe/Amsterdam
+  localTZ.setDefault();
+  //DebugT("Amsterdam time:");Debugln(localTZ.dateTime());
+  //DebugT("UTC       time:");Debugln(UTC.dateTime());
+//================ End Timezone ====================================
+  
 //================ Start InfluxDB  =================================
 
 #ifdef USE_INFLUXDB
