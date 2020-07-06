@@ -44,6 +44,7 @@
 //  #define HAS_NO_SLIMMEMETER        // define for testing only!
 #define USE_INFLUXDB                  // define if you want to use Influxdb (configure through webinterface)
 #define USE_MQTT                  // define if you want to use MQTT (configure through webinterface)
+#define USE_INFLUXDB                  // define if you want to use Influxdb (configure through webinterface)
 #define USE_MINDERGAS             // define if you want to update mindergas (configure through webinterface)
 //  #define USE_SYSLOGGER             // define if you want to use the sysLog library for debugging
 //  #define SHOW_PASSWRDS             // well .. show the PSK key and MQTT password, what else?
@@ -482,6 +483,13 @@ void setup()
 
 //================ End of InfluxDB ================================
 
+//================ Start InfluxDB  =================================
+
+#ifdef USE_INFLUXDB
+  initInfluxDB();
+#endif
+
+//================ End of InfluxDB ================================
 
 //================ The final part of the Setup =====================
 

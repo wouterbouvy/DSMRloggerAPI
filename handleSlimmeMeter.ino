@@ -15,7 +15,7 @@ void handleSlimmemeter()
 {
   //DebugTf("showRaw (%s)\r\n", showRaw ?"true":"false");
   if (showRaw) {
-    //-- process telegrams in raw mode
+    //-- process telegrams in raw in mode
     processSlimmemeterRaw();
   } 
   else
