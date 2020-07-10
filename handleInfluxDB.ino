@@ -40,8 +40,8 @@ InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB_NAME);
 //  Central Europe: "CET-1CEST,M3.5.0,M10.5.0/3"
 #define TZ_INFO "CET-1CEST,M3.5.0,M10.5.0/3"
 #define WRITE_PRECISION WritePrecision::S
-#define MAX_BATCH_SIZE 5
-#define WRITE_BUFFER_SIZE 10
+#define MAX_BATCH_SIZE 16
+#define WRITE_BUFFER_SIZE 32
 
 time_t thisEpoch;
 
