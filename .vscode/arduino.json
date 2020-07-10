@@ -4,5 +4,5 @@
     "sketch": "DSMRloggerAPI.ino",
     "output": "D:/Users/Robert/Documents/GitHub/build",
     "port": "COM5",
-    "prebuild": "D:/Users/Robert/Documents/GitHub/Tools/semver-incr-build ./version.h"
+    "prebuild": "D:/Users/Robert/Documents/GitHub/Rvdb/autoinc-semver/semver-incr-build ./version.h"
 }
