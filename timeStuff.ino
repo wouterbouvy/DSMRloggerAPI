@@ -177,9 +177,12 @@ time_t epoch(const char *timeStamp, int8_t len, bool syncTime)
     setTime(savEpoch);
   }
 
-  DebugT("Amsterdam time:");Debugln(localTZ.dateTime());
-  DebugT("UTC       time:");Debugln(UTC.dateTime());
-
+  if (Verbose2)
+  { 
+    DebugT("Amsterdam time:");Debugln(localTZ.dateTime());
+    DebugT("UTC       time:");Debugln(UTC.dateTime());
+  }
+  
   return nT;
 
 } // epoch()

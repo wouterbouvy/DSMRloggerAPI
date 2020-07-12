@@ -232,10 +232,10 @@ DECLARE_TIMER_SEC(updateSeconds,       1, CATCH_UP_MISSED_TICKS);
 DECLARE_TIMER_SEC(updateDisplay,       5);
 DECLARE_TIMER_MIN(reconnectWiFi,      30);
 DECLARE_TIMER_MIN(synchrNTP,          10, SKIP_MISSED_TICKS);
-DECLARE_TIMER_SEC(nextTelegram,       10);
+DECLARE_TIMER_SEC(nextTelegram,       10, CATCH_UP_MISSED_TICKS);
 DECLARE_TIMER_MIN(reconnectMQTTtimer,  2); // try reconnecting cyclus timer
-DECLARE_TIMER_SEC(publishMQTTtimer,   60, SKIP_MISSED_TICKS); // interval time between MQTT messages  
-DECLARE_TIMER_MIN(minderGasTimer,     10, CATCH_UP_MISSED_TICKS); 
+DECLARE_TIMER_SEC(publishMQTTtimer,   60, CATCH_UP_MISSED_TICKS); // interval time between MQTT messages  
+DECLARE_TIMER_MIN(minderGasTimer,     1, CATCH_UP_MISSED_TICKS);  // once minute
 DECLARE_TIMER_SEC(antiWearTimer,      61);
 
 /***************************************************************************

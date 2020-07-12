@@ -1,9 +1,6 @@
 
 *.bin
 data/DSMRsettings.ini
-data/RINGdays.csv
-data/RINGhours.csv
-data/RINGmonths.csv
+*.csv
 .DS_Store
-
-
+.vscode/c_cpp_properties.json

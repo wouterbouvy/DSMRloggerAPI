@@ -78,8 +78,10 @@ struct writeInfluxDataPoints {
         pointItem.addTag("instance",Item::name);     
         pointItem.addField("value", i.val());
 //        pointItem.addField((String)(Item::name), i.val());
-        DebugT("Writing to influxdb:");
-        Debugln(pointItem.toLineProtocol());
+        if (Verbose1) {
+          DebugT("Writing to influxdb:");
+          Debugln(pointItem.toLineProtocol());          
+        }
         if (!client.writePoint(pointItem)) {
           DebugT("InfluxDB write failed: ");
           Debugln(client.getLastErrorMessage());
@@ -105,13 +107,15 @@ void handleInfluxDB()
     lastTelegram = telegramCount;
     //Setup the timestamp for this telegram, so all points for this batch are the same.
     thisEpoch = UTC.now();  
-    DebugTf("Epoc = %d (this) %d (NL) %d (UTC) \r\n", (int)thisEpoch, (int)localTZ.now(), (int)UTC.now());
+    DebugTf("Writing telegram to influxddb - Epoc = %d (this) %d (NL) %d (UTC) \r\n", (int)thisEpoch, (int)localTZ.now(), (int)UTC.now());
+    uint32_t timeThis = millis();
     DSMRdata.applyEach(writeInfluxDataPoints());
     // Check whether buffer in not empty
     if (!client.isBufferEmpty()) {
       // Write all remaining points to db
       client.flushBuffer();
     }
+    DebugTf("Influxdb write took [%d] ms\r\n", (int)(millis()-timeThis));
   }
   
 }

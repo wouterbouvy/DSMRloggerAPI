@@ -535,6 +535,45 @@ void delayms(unsigned long delay_ms)
 
 //========================================================================================
 
+//===[ blink the LED ]====================================================================
+void blinkLED()
+{
+  // Blink once
+  digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+}
+
+//===[ If wifi is disconneted then blink 10 times ]=======================================
+
+void doCheckWifiConnection()
+{
+  //when wifi is not connected, the blink fast
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    for(int b=0; b<10; b++) { blinkLED(); delay(75);}
+  }
+  
+}
+
+//===[ If wifi is not connected, then try to reconnect ]=================================
+
+void doReconnectWifi()
+{
+  if (WiFi.status() == WL_CONNECTED) return;
+  // if not connected, then try reconnect
+  writeToSysLog("Restart wifi with [%s]...", settingHostname);
+  startWiFi(settingHostname, 10);
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    writeToSysLog("%s", "Wifi still not connected! Waiting for next attempt.");
+  }
+  else 
+  {
+        snprintf(cMsg, sizeof(cMsg), "IP:[%s], Gateway:[%s]", WiFi.localIP().toString().c_str()
+                                                            , WiFi.gatewayIP().toString().c_str());
+        writeToSysLog("%s", cMsg);
+  }
+}
+
 //==[ Do Telegram Processing ]===============================================================
 void doTaskTelegram()
 {
@@ -542,23 +581,20 @@ void doTaskTelegram()
   #if defined(HAS_NO_SLIMMEMETER)
     handleTestdata();
   #else
-    //-- enable DTR to read a telegram from the Slimme Meter
+    // //-- enable DTR to read a telegram from the Slimme Meter
     slimmeMeter.enable(true); 
-    slimmeMeter.loop();
-    handleSlimmemeter();
+//    slimmeMeter.loop();
   #endif
-  if (WiFi.status() != WL_CONNECTED)
-  {
-    for(int b=0; b<10; b++) { digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN)); delay(75);}
-  }
-  digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+  blinkLED();
 }
+
 
 //===[ Do System tasks ]=============================================================
 void doSystemTasks()
 {
   #ifndef HAS_NO_SLIMMEMETER
-    slimmeMeter.loop();
+    //slimmeMeter.loop();
+    handleSlimmemeter();
   #endif
   #ifdef USE_MQTT
     MQTTclient.loop();
@@ -584,19 +620,17 @@ void loop ()
 
   loopCount++;
 
+  //--- update upTime counter
+  if DUE(updateSeconds)
+    upTimeSeconds++;
+    
   //--- verwerk volgend telegram
   if DUE(nextTelegram)
   {
     doTaskTelegram();
-    #ifdef USE_INFLUXDB
-      handleInfluxDB();
-    #endif
-  }
-
-  //--- update upTime counter
-  if DUE(updateSeconds)
-  {
-    upTimeSeconds++;
+#ifdef USE_INFLUXDB
+    handleInfluxDB();
+#endif
   }
 
 //--- if an OLED screen attached, display the status
@@ -608,27 +642,15 @@ void loop ()
     }
   }
 
-//--- if mindergas then check
+  //--- if mindergas then check
 #ifdef USE_MINDERGAS
-  if ( DUE(minderGasTimer) )
-  {
+  if DUE(minderGasTimer) 
     handleMindergas();
-  }
 #endif
 
   //--- if connection lost, try to reconnect to WiFi
-  if ( DUE(reconnectWiFi) && (WiFi.status() != WL_CONNECTED) )
-  {
-    writeToSysLog("Restart wifi with [%s]...", settingHostname);
-    startWiFi(settingHostname, 10);
-    if (WiFi.status() != WL_CONNECTED)
-          writeToSysLog("%s", "Wifi still not connected!");
-    else {
-          snprintf(cMsg, sizeof(cMsg), "IP:[%s], Gateway:[%s]", WiFi.localIP().toString().c_str()
-                                                              , WiFi.gatewayIP().toString().c_str());
-          writeToSysLog("%s", cMsg);
-    }
-  }
+  if DUE(reconnectWiFi) 
+    doReconnectWifi();
 
 //--- if NTP set, see if it needs synchronizing
 #if defined(USE_NTP_TIME)                                           //USE_NTP
