@@ -25,6 +25,13 @@ void handleSlimmemeter()
 
 } // handleSlimmemeter()
 
+//==================================================================================
+
+void tiggerNextTelegram()
+{
+      // //-- enable DTR to read a telegram from the Slimme Meter
+    slimmeMeter.enable(true); 
+} // tiggerNextTelegram()
 
 //==================================================================================
 void processSlimmemeterRaw()
@@ -172,7 +179,7 @@ void processSlimmemeter()
         
   } // if (slimmeMeter.available()) 
   
-} // handleSlimmeMeter()
+} // processSlimmeMeter()
 
 #endif
 

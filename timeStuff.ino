@@ -163,7 +163,7 @@ time_t epoch(const char *timeStamp, int8_t len, bool syncTime)
   time_t nT;
   time_t savEpoch = now();
   
-  setTime(HourFromTimestamp(fullTimeStamp)
+  localTZ.setTime(HourFromTimestamp(fullTimeStamp)
          ,MinuteFromTimestamp(fullTimeStamp)
          ,SecondFromTimestamp(fullTimeStamp)
          ,DayFromTimestamp(fullTimeStamp)
@@ -174,7 +174,7 @@ time_t epoch(const char *timeStamp, int8_t len, bool syncTime)
   nT = now();
   if (!syncTime)
   {
-    setTime(savEpoch);
+    localTZ.setTime(savEpoch);
   }
 
   if (Verbose2)

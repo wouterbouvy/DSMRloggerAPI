@@ -47,11 +47,16 @@ time_t thisEpoch;
 
 void initInfluxDB()
 {
-  // Set InfluxDB 1 authentication params
-  // Only needed when query's are done?
-  //client.setConnectionParamsV1(INFLUXDB_URL, INFLUXDB_DB_NAME, INFLUXDB_USER, INFLUXDB_PASSWORD);
+  if ( sizeof(settingInfluxDBhostname) < 8 )  return; 
 
+ // Set InfluxDB 1 authentication params
+  // Only needed when query's are done?
+  //client.setConnectionParamsV1(INFLUXDB_URL, INFLUXDB_DB_NAME, INFLUXDB_USER, INFLUXDB_PASSWORD);   
+  snprintf(cMsg, sizeof(cMsg), "http://%s:%d", settingInfluxDBhostname , settingInfluxDBport);
+  DebugTf("InfluxDB Connection Setup: [%s] - database: [%s]", cMsg , settingInfluxDBdatabasename);
+  client.setConnectionParamsV1(cMsg, settingInfluxDBdatabasename);
   // Connect to influxdb server connection
+
   if (client.validateConnection()) {
     Serial.print("Connected to InfluxDB: ");
     Serial.println(client.getServerUrl());
@@ -94,13 +99,7 @@ struct writeInfluxDataPoints {
 void handleInfluxDB()
 {
   static uint32_t lastTelegram = 0;
-//   DebugTf("telegramCount=[%d] telegramErrors=[%d] lastTelegram=[%d]\r\n", telegramCount, telegramErrors, lastTelegram);
-  
-//  if ((telegramCount - telegramErrors) > 1) 
-//  {
-//    Debugln("InfluxDB: Waiting for first telegram...");  
-//    return;
-//  }
+  if (!client.validateConnection()) return; // only write if there is a valid connection to InfluxDB
   if ((telegramCount - lastTelegram)> 0)
   {
     //New telegram received, let's forward that to influxDB

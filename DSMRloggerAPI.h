@@ -192,6 +192,7 @@ void delayms(unsigned long);
   bool        showRaw = false;
   int8_t      showRawCount = 0;
   Timezone    localTZ;
+  char      cMsg[150], fChar[10];
 
 #ifdef USE_MQTT
   #include <PubSubClient.h>           // MQTT client publish and subscribe functionality
@@ -206,7 +207,13 @@ void delayms(unsigned long);
   static char      timeLastResponse[16]      = "";  
 #endif
 
-char      cMsg[150], fChar[10];
+#ifdef USE_INFLUXDB
+  char      settingInfluxDBhostname[101] = "";
+  uint16_t  settingInfluxDBport = 8086;
+  char      settingInfluxDBdatabasename[30] = "";
+#endif
+
+
 String    lastReset           = "";
 bool      spiffsNotPopulated  = false;
 bool      hasAlternativeIndex = false;

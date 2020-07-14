@@ -44,7 +44,6 @@
 //  #define HAS_NO_SLIMMEMETER        // define for testing only!
 #define USE_INFLUXDB                  // define if you want to use Influxdb (configure through webinterface)
 #define USE_MQTT                  // define if you want to use MQTT (configure through webinterface)
-#define USE_INFLUXDB                  // define if you want to use Influxdb (configure through webinterface)
 #define USE_MINDERGAS             // define if you want to update mindergas (configure through webinterface)
 //  #define USE_SYSLOGGER             // define if you want to use the sysLog library for debugging
 //  #define SHOW_PASSWRDS             // well .. show the PSK key and MQTT password, what else?
@@ -483,14 +482,6 @@ void setup()
 
 //================ End of InfluxDB ================================
 
-//================ Start InfluxDB  =================================
-
-#ifdef USE_INFLUXDB
-  initInfluxDB();
-#endif
-
-//================ End of InfluxDB ================================
-
 //================ The final part of the Setup =====================
 
   snprintf(cMsg, sizeof(cMsg), "Last reset reason: [%s]\r", ESP.getResetReason().c_str());
@@ -571,19 +562,21 @@ void doReconnectWifi()
         snprintf(cMsg, sizeof(cMsg), "IP:[%s], Gateway:[%s]", WiFi.localIP().toString().c_str()
                                                             , WiFi.gatewayIP().toString().c_str());
         writeToSysLog("%s", cMsg);
+
+        //On reconnect wifi, also reconnect InfluxDB
+        initiInfluxDB();
   }
 }
 
 //==[ Do Telegram Processing ]===============================================================
 void doTaskTelegram()
 {
+  //Trigger next telegram (or just generate data in case of no slimmemeter)
   if (Verbose1) DebugTln("doTaskTelegram");
   #if defined(HAS_NO_SLIMMEMETER)
-    handleTestdata();
+    handleTestdata();  
   #else
-    // //-- enable DTR to read a telegram from the Slimme Meter
-    slimmeMeter.enable(true); 
-//    slimmeMeter.loop();
+    tiggerNextTelegram();
   #endif
   blinkLED();
 }
@@ -593,8 +586,9 @@ void doTaskTelegram()
 void doSystemTasks()
 {
   #ifndef HAS_NO_SLIMMEMETER
-    //slimmeMeter.loop();
-    handleSlimmemeter();
+    //It's async serial device, so it can receive the next telegram, when done, trigger processing.
+    //Do not use just slimmeMeter.loop(), it only "receives data", not process when done.
+    handleSlimmemeter();  
   #endif
   #ifdef USE_MQTT
     MQTTclient.loop();

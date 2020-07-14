@@ -341,6 +341,9 @@ void sendDeviceInfo()
 #ifdef USE_MINDERGAS
     strConcat(compileOptions, sizeof(compileOptions), "[USE_MINDERGAS]");
 #endif
+#ifdef USE_INFLUXDB
+    strConcat(compileOptions, sizeof(compileOptions), "[USE_INFLUXDB]");
+#endif
 #ifdef USE_SYSLOGGER
     strConcat(compileOptions, sizeof(compileOptions), "[USE_SYSLOGGER]");
 #endif
@@ -422,6 +425,13 @@ void sendDeviceInfo()
   sendNestedJsonObj("mindergas_status",       cMsg);
 #endif
 
+#ifdef USE_INFLUXDB
+  sendNestedJsonObj("influxdb_hostname",           settingInfluxDBhostname);
+  sendNestedJsonObj("influxdb_port",              (int)settingInfluxDBport);
+  sendNestedJsonObj("influxdb_databasename",      settingInfluxDBdatabasename);
+#endif
+
+
   sendNestedJsonObj("reboots", (int)nrReboots);
   sendNestedJsonObj("lastreset", lastReset);
 
@@ -465,15 +475,19 @@ void sendDeviceSettings()
   sendJsonSettingObj("oled_flip_screen",  settingOledFlip,        "i", 0, 1);
   sendJsonSettingObj("index_page",        settingIndexPage,       "s", sizeof(settingIndexPage) -1);
   sendJsonSettingObj("mqtt_broker",       settingMQTTbroker,      "s", sizeof(settingMQTTbroker) -1);
-  sendJsonSettingObj("mqtt_broker_port",  settingMQTTbrokerPort,  "i", 1, 9999);
+  sendJsonSettingObj("mqtt_broker_port",  settingMQTTbrokerPort,  "i", 1, 65535);
   sendJsonSettingObj("mqtt_user",         settingMQTTuser,        "s", sizeof(settingMQTTuser) -1);
   sendJsonSettingObj("mqtt_passwd",       settingMQTTpasswd,      "s", sizeof(settingMQTTpasswd) -1);
   sendJsonSettingObj("mqtt_toptopic",     settingMQTTtopTopic,    "s", sizeof(settingMQTTtopTopic) -1);
   sendJsonSettingObj("mqtt_interval",     settingMQTTinterval,    "i", 0, 600);
-#if defined (USE_MINDERGAS )
+#ifdef USE_MINDERGAS
   sendJsonSettingObj("mindergastoken",  settingMindergasToken,    "s", sizeof(settingMindergasToken) -1);
 #endif
-
+#ifdef USE_INFLUXDB
+  sendJsonSettingObj("influxdb_hostname",           settingInfluxDBhostname,       "s", sizeof(settingInfluxDBhostname)-1);
+  sendJsonSettingObj("influxdb_port",              (int)settingInfluxDBport,      "i", 1, 65535);
+  sendJsonSettingObj("influxdb_databasename",      settingInfluxDBdatabasename,   "s", sizeof(settingInfluxDBdatabasename)-1);
+#endif
   sendEndJsonObj();
 
 } // sendDeviceSettings()
