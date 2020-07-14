@@ -254,6 +254,7 @@ void readSettings(bool show)
   if (words[0].equalsIgnoreCase("InfluxDBhostname"))    	strlcpy(settingInfluxDBhostname,     words[1].c_str(), sizeof(settingInfluxDBhostname));
   if (words[0].equalsIgnoreCase("InfluxDBport"))          settingInfluxDBport                = words[1].toInt();  
   if (words[0].equalsIgnoreCase("InfluxDBdatabasename"))  strlcpy(settingInfluxDBdatabasename, words[1].c_str(), sizeof(settingInfluxDBdatabasename));
+  initInfluxDB();
 #endif
     
   } // while available()
