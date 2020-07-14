@@ -564,7 +564,7 @@ void doReconnectWifi()
         writeToSysLog("%s", cMsg);
 
         //On reconnect wifi, also reconnect InfluxDB
-        initiInfluxDB();
+        initInfluxDB();
   }
 }
 
