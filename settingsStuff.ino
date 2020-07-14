@@ -416,7 +416,7 @@ void updateSetting(const char *field, const char *newValue)
 
 #ifdef USE_INFLUXDB
   if (!stricmp(field, "influxdb_hostname")) {
-    strlcpy(settingInfluxDBhostname, newValue, sizeof(settingInfluxDBhostname))
+    strlcpy(settingInfluxDBhostname, newValue, sizeof(settingInfluxDBhostname));
     initInfluxDB();
   }
   if (!stricmp(field, "influxdb_port")) {

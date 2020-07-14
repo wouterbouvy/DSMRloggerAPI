@@ -2019,7 +2019,10 @@ http://DSMR-API.local/api/v1/dev/settings</pre>", false);
           ,[ "mindergas_token",           "Mindergas Token" ]
           ,[ "mindergas_response",        "Mindergas Terugkoppeling" ]
           ,[ "mindergas_status",          "Mindergas Status (@dag | tijd)" ]
-
+          ,[ "influxdb_hostname",         "InfluxDB hostname"]
+          ,[ "influxdb_port",             "InfluxDB port (default: 8086)"]
+          ,[ "influxdb_databasename",     "InfluxDB database name"]
+          
           ,[ "telegramcount",             "Telegrammen verwerkt" ]
           ,[ "telegramerrors",            "Telegrammen met fouten" ]          
           ,[ "fwversion",                 "Firmware Versie" ]
