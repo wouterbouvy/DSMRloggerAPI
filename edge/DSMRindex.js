@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : DSMRindex.js, part of DSMRfirmwareAPI
-**  Version  : v2.0.1
+**  Version  : v2.0.3
 **
 **  Copyright (c) 2020 Willem Aandewiel
 **

@@ -1,7 +1,7 @@
 <!--
 ***************************************************************************  
 **  Program  : DSMRindex.html.inc, part of DSMRloggerAPI
-**  Version  : v1.2.2
+**  Version  : v2.0.3
 **
 **  Copyright (c) 2020 Willem Aandewiel
 **
