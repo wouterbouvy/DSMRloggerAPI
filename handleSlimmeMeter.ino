@@ -1,6 +1,6 @@
 /*
 ***************************************************************************  
-**  Program  : handleSlimmeMeter - part of DSMRloggerAPI
+**  Program  : handleSlimmeMeter - part of DSMRlogger-Next
 **  Version  : v2.1.0-rc0
 **
 **  Copyright (c) 2020 Willem Aandewiel
@@ -49,7 +49,7 @@ void processSlimmemeterRaw()
   
   if (settingOledType > 0)
   {
-    oled_Print_Msg(0, "<DSMRloggerAPI>", 0);
+    oled_Print_Msg(0, "<DSMRlogger-Next>", 0);
     oled_Print_Msg(1, "-------------------------",0);
     oled_Print_Msg(2, "Raw Format",0);
     snprintf(cMsg, sizeof(cMsg), "Raw Count %4d", showRawCount);

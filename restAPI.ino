@@ -1,6 +1,6 @@
 /* 
 ***************************************************************************  
-**  Program  : restAPI, part of DSMRloggerAPI
+**  Program  : restAPI, part of DSMRlogger-Next
 **  Version  : v2.1.0-rc0
 **
 **  Copyright (c) 2020 Willem Aandewiel
@@ -730,7 +730,7 @@ void sendApiNotFound(const char *URI)
   httpServer.sendContent(cMsg);
   
   strCopy(cMsg,   sizeof(cMsg), "<a href=");
-  strConcat(cMsg, sizeof(cMsg), "\"https://mrwheel-docs.gitbook.io/dsmrloggerapi/beschrijving-restapis\">");
+  strConcat(cMsg, sizeof(cMsg), "\"https://mrwheel-docs.gitbook.io/DSMRloggerAPI/beschrijving-restapis\">");
   strConcat(cMsg, sizeof(cMsg), "restAPI</a> call.");
   httpServer.sendContent(cMsg);
   

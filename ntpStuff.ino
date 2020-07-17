@@ -1,6 +1,6 @@
 /*
 ***************************************************************************  
-**  Program  : ntpStuff, part of DSMRloggerAPI
+**  Program  : ntpStuff, part of DSMRlogger-Next
 **  Version  : v2.1.0-rc0
 **
 **  Copyright (c) 2020 Willem Aandewiel

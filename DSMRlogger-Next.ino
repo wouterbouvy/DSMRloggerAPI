@@ -1,11 +1,14 @@
 /*
 ***************************************************************************  
-**  Program  : DSMRloggerAPI (restAPI)
+**  Program  : DSMRlogger-Next (the Next version of DSMR Logger)
 */
 #include "version.h" 
 #define _FW_VERSION _VERSION
 /*
-**  Copyright (c) 2020 Willem Aandewiel
+**  Copyright (c) 2020 Robert van den Breemen
+**
+**  Based on the original:
+**          DSMRloggerAPI- Copyright (c) 2020 Willem Aandewiel
 **
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************      
@@ -32,7 +35,7 @@
 /*
 **  You can find more info in the following links (all in Dutch): 
 **   https://willem.aandewiel.nl/index.php/2020/02/28/restapis-zijn-hip-nieuwe-firmware-voor-de-dsmr-logger/
-**   https://mrwheel-docs.gitbook.io/dsmrloggerapi/
+**   https://mrwheel-docs.gitbook.io/DSMRloggerAPI/
 **   https://mrwheel.github.io/DSMRloggerWS/
 */
 /******************** compiler options  ********************************************/
@@ -49,7 +52,7 @@
 //  #define SHOW_PASSWRDS             // well .. show the PSK key and MQTT password, what else?
 /******************** don't change anything below this comment **********************/
 
-#include "DSMRloggerAPI.h"
+#include "DSMRlogger-Next.h"
 
 struct showValues {
   template<typename Item>
@@ -105,7 +108,7 @@ void openSysLog(bool empty)
     DebugTln("Succes opening sysLog!");
     if (settingOledType > 0)
     {
-      oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+      oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
       oled_Print_Msg(3, "Syslog OK!", 500);
     }
   }
@@ -114,7 +117,7 @@ void openSysLog(bool empty)
     DebugTln("Error opening sysLog!");
     if (settingOledType > 0)
     {
-      oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+      oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
       oled_Print_Msg(3, "Error Syslog", 1500);
     }
   }
@@ -163,7 +166,7 @@ void setup()
   {
     oled_Init();
     oled_Clear();  // clear the screen so we can paint the menu.
-    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+    oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
     int8_t sPos = String(_FW_VERSION).indexOf(' ');
     snprintf(cMsg, sizeof(cMsg), "(c)2020 [%s]", String(_FW_VERSION).substring(0,sPos).c_str());
     oled_Print_Msg(1, cMsg, 0);
@@ -185,7 +188,7 @@ void setup()
   startTelnet();
   if (settingOledType > 0)
   {
-    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+    oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
     oled_Print_Msg(3, "telnet (poort 23)", 2500);
   }
   
@@ -196,7 +199,7 @@ void setup()
     SPIFFSmounted = true;
     if (settingOledType > 0)
     {
-      oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+      oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
       oled_Print_Msg(3, "SPIFFS mounted", 1500);
     }    
   } else { 
@@ -204,7 +207,7 @@ void setup()
     SPIFFSmounted = false;
     if (settingOledType > 0)
     {
-      oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+      oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
       oled_Print_Msg(3, "SPIFFS FAILED!", 2000);
     }
   }
@@ -228,7 +231,7 @@ void setup()
   {
     if (settingOledFlip)  oled_Init();  // only if true restart(init) oled screen
     oled_Clear();                       // clear the screen 
-    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+    oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
     oled_Print_Msg(1, "Verbinden met WiFi", 500);
   }
   digitalWrite(LED_BUILTIN, LED_ON);
@@ -236,7 +239,7 @@ void setup()
 
   if (settingOledType > 0)
   {
-    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+    oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
     oled_Print_Msg(1, WiFi.SSID(), 0);
     snprintf(cMsg, sizeof(cMsg), "IP %s", WiFi.localIP().toString().c_str());
     oled_Print_Msg(2, cMsg, 1500);
@@ -285,7 +288,7 @@ void setup()
     DebugTln(F("ERROR!!! No NTP server reached!\r\n\r"));   //USE_NTP
     if (settingOledType > 0)                                //USE_NTP
     {                                                       //USE_NTP
-      oled_Print_Msg(0, " <DSMRloggerAPI>", 0);              //USE_NTP
+      oled_Print_Msg(0, " <DSMRlogger-Next>", 0);              //USE_NTP
       oled_Print_Msg(2, "geen reactie van", 100);           //USE_NTP
       oled_Print_Msg(2, "NTP server's", 100);               //USE_NTP 
       oled_Print_Msg(3, "Reboot DSMR-logger", 2000);        //USE_NTP
@@ -296,7 +299,7 @@ void setup()
   }                                                         //USE_NTP
   if (settingOledType > 0)                                  //USE_NTP
   {                                                         //USE_NTP
-    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);                //USE_NTP
+    oled_Print_Msg(0, " <DSMRlogger-Next>", 0);                //USE_NTP
     oled_Print_Msg(3, "NTP gestart", 1500);                 //USE_NTP
   }                                                         //USE_NTP
   prevNtpHour = hour();                                     //USE_NTP
@@ -374,7 +377,7 @@ void setup()
   {
     snprintf(cMsg, sizeof(cMsg), "DT: %02d%02d%02d%02d0101W", thisYear
                                                             , thisMonth, thisDay, thisHour);
-    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+    oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
     oled_Print_Msg(3, cMsg, 1500);
   }
 
@@ -384,7 +387,7 @@ void setup()
   connectMQTT();                                                //USE_MQTT
   if (settingOledType > 0)                                      //USE_MQTT
   {                                                             //USE_MQTT
-    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);                    //USE_MQTT
+    oled_Print_Msg(0, " <DSMRlogger-Next>", 0);                    //USE_MQTT
     oled_Print_Msg(3, "MQTT server set!", 1500);                //USE_MQTT
   }                                                             //USE_MQTT
 #endif                                                          //USE_MQTT
@@ -398,7 +401,7 @@ void setup()
     DebugTln(F("SPIFFS correct populated -> normal operation!\r"));
     if (settingOledType > 0)
     {
-      oled_Print_Msg(0, " <DSMRloggerAPI>", 0); 
+      oled_Print_Msg(0, " <DSMRlogger-Next>", 0); 
       oled_Print_Msg(1, "OK, SPIFFS correct", 0);
       oled_Print_Msg(2, "Verder met normale", 0);
       oled_Print_Msg(3, "Verwerking ;-)", 2500);
@@ -443,7 +446,7 @@ void setup()
   if (settingOledType > 0)                                  //HAS_OLED
   {                                                         //HAS_OLED
     oled_Clear();                                           //HAS_OLED
-    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);                //HAS_OLED
+    oled_Print_Msg(0, " <DSMRlogger-Next>", 0);                //HAS_OLED
     oled_Print_Msg(2, "HTTP server ..", 0);                 //HAS_OLED
     oled_Print_Msg(3, "gestart (poort 80)", 0);             //HAS_OLED
   }                                                         //HAS_OLED
@@ -489,7 +492,7 @@ void setup()
 
   if (settingOledType > 0)
   {
-    oled_Print_Msg(0, "<DSMRloggerAPI>", 0);
+    oled_Print_Msg(0, "<DSMRlogger-Next>", 0);
     oled_Print_Msg(1, "Startup complete", 0);
     oled_Print_Msg(2, "Wait for first", 0);
     oled_Print_Msg(3, "telegram .....", 500);

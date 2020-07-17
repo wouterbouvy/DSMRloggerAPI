@@ -1,6 +1,6 @@
 /*
 ***************************************************************************  
-**  Program  : oledStuff.h, part of DSMRloggerAPI
+**  Program  : oledStuff.h, part of DSMRlogger-Next
 **  Version  : v2.1.0-rc0
 **
 **  Copyright (c) 2020 Willem Aandewiel
@@ -64,7 +64,7 @@ void checkFlashButton()
       DebugTln(F("Switching display off.."));
     }
     oled.clear();
-    oled_Print_Msg(0, "<DSMRloggerAPI>", 0);
+    oled_Print_Msg(0, "<DSMRlogger-Next>", 0);
     oled_Print_Msg(2, "Wacht ...", 5);
     msgMode = 0; //reset the display loop
     RESTART_TIMER(oledSleepTimer);

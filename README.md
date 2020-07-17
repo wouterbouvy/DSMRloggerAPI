@@ -19,7 +19,7 @@ The original code and release of DSMRloggerAPI can be found here:
 [here](https://willem.aandewiel.nl/index.php/2020/02/28/restapis-zijn-hip-nieuwe-firmware-voor-de-dsmr-logger/)
 you can find information about this project.
 
-Documentation can be found [here](https://mrwheel-docs.gitbook.io/dsmrloggerapi/) (in progress)!
+Documentation can be found [here](https://mrwheel-docs.gitbook.io/DSMRlogger-Next/) (in progress)!
 
 <table>
 <tr><th>Versie</th><th>Opmerking</th></tr>

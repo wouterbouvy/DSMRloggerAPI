@@ -1,6 +1,6 @@
 /* 
 ***************************************************************************  
-**  Program  : menuStuff, part of DSMRloggerAPI
+**  Program  : menuStuff, part of DSMRlogger-Next
 **  Version  : v2.1.0-rc0
 **
 **  Copyright (c) 2020 Willem Aandewiel
