@@ -1,11 +1,14 @@
 /*
 ***************************************************************************  
-**  Program  : DSMRloggerAPI (restAPI)
+**  Program  : DSMRlogger-Next (the Next version of DSMR Logger)
 */
 #include "version.h" 
 #define _FW_VERSION _VERSION
 /*
-**  Copyright (c) 2020 Willem Aandewiel
+**  Copyright (c) 2020 Robert van den Breemen
+**
+**  Based on the original:
+**          DSMRLoggerAPI - Copyright (c) 2020 Willem Aandewiel
 **
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************      
@@ -50,7 +53,7 @@
 //  #define SHOW_PASSWRDS             // well .. show the PSK key and MQTT password, what else?
 /******************** don't change anything below this comment **********************/
 
-#include "DSMRloggerAPI.h"
+#include "DSMRlogger-Next.h"
 
 struct showValues {
   template<typename Item>
@@ -62,9 +65,9 @@ struct showValues {
       TelnetStream.print(F(": "));
       TelnetStream.print(i.val());
       TelnetStream.print(Item::unit());
-    //} else 
-    //{
-    //  TelnetStream.print(F("<no value>"));
+    } else 
+    {
+      TelnetStream.print(F("<no value>"));
     }
     TelnetStream.println();
   }
