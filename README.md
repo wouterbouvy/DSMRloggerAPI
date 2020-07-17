@@ -2,24 +2,25 @@
 The Next firmware for the DSMR-logger
 
 
-This is the FORK of Willem's project implementing new features, like direct InfluxDB writer and fixing bugs and trying to improve the codebase.
+This is the FORK of the original DSMRlogger from Willem Aandewiel. The intent of this for is to start implementing new features, fixing bugs and trying to improve the codebase.
 
 With the launch of the Final version of DSMRloggerAPI, version 2.0.1 it completed the last and final update of Willem and released it to the public.
 
-This fork is picking up where Willem stopped development, fixing bugs and adding new features. 
+This fork is picking up where Willem finished the development of the REST finished, by fixing bugs, improvement to the codebas and starting to add new features to the firmware. 
 
-The first release DSMRlogger-Next will add:
-- Direct writting to InfluxDB
-- Fixing DSMR handling so that DSMR spec 4.2 meter will work properly once more.
+The first release candidate of DSMRlogger-Next will contain:
+- Direct writting to InfluxDB;
+- Fixing DSMR handling so that DSMR spec 4.2 meter will work properly once more;
+- Minor improvements.
 
-If you have any idea's or suggestions, please do a Pull Request on the project. 
+If you have any idea's or suggestions, just ask for them through the issues of this project on GitHub. Did you want to join me in development, then just do a Pull Request this project and I will consider it.
 
 The original code and release of DSMRloggerAPI can be found here:
 [Here](https://willem.aandewiel.nl/index.php/2019/04/09/dsmr-logger-v4-slimme-meter-uitlezer/) and
 [here](https://willem.aandewiel.nl/index.php/2020/02/28/restapis-zijn-hip-nieuwe-firmware-voor-de-dsmr-logger/)
 you can find information about this project.
 
-Documentation can be found [here](https://mrwheel-docs.gitbook.io/DSMRlogger-Next/) (in progress)!
+Documentation of DSMRloggerAPIcan be found [here](https://mrwheel-docs.gitbook.io/dsmrloggerapi/) (work in progress)!
 
 <table>
 <tr><th>Versie</th><th>Opmerking</th></tr>
