@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
-**  Program  : networkStuff.h, part of DSMRloggerAPI
-**  Version  : v2.0.1
+**  Program  : networkStuff.h, part of DSMRlogger-Next
+**  Version  : v2.1.0-rc0
 **
 **  Copyright (c) 2020 Willem Aandewiel
 **
@@ -47,7 +47,7 @@ void configModeCallback (WiFiManager *myWiFiManager)
   if (settingOledType > 0)
   {
     oled_Clear();
-    oled_Print_Msg(0, "<DSMRloggerAPI>", 0);
+    oled_Print_Msg(0, "<DSMRlogger-Next>", 0);
     oled_Print_Msg(1, "AP mode active", 0);
     oled_Print_Msg(2, "Connect to:", 0);
     oled_Print_Msg(3, myWiFiManager->getConfigPortalSSID(), 0);
@@ -85,7 +85,7 @@ void startWiFi(const char* hostname, int timeOut)
     if (settingOledType > 0)
     {
       oled_Clear();
-      oled_Print_Msg(0, "<DSMRloggerAPI>", 0);
+      oled_Print_Msg(0, "<DSMRlogger-Next>", 0);
       oled_Print_Msg(1, "Failed to connect", 0);
       oled_Print_Msg(2, "and hit TimeOut", 0);
       oled_Print_Msg(3, "**** NO WIFI ****", 0);

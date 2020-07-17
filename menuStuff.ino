@@ -1,7 +1,7 @@
 /* 
 ***************************************************************************  
-**  Program  : menuStuff, part of DSMRloggerAPI
-**  Version  : v2.0.1
+**  Program  : menuStuff, part of DSMRlogger-Next
+**  Version  : v2.1.0-rc0
 **
 **  Copyright (c) 2020 Willem Aandewiel
 **
@@ -60,6 +60,9 @@ void displayBoardInfo()
 #endif
 #ifdef USE_MINDERGAS
   Debug(F("[USE_MINDERGAS]"));
+#endif
+#ifdef USE_INFLUXDB
+  Debug(F("[USE_INFLUXDB]"));
 #endif
 #ifdef USE_SYSLOGGER
   Debug(F("[USE_SYSLOGGER]"));
@@ -130,7 +133,7 @@ void displayBoardInfo()
 
 #ifdef USE_MQTT
   Debugln(F("==================================================================\r"));
-  Debug(F(" \r\n           MQTT broker ["));  Debug( settingMQTTbroker );
+  Debug(F("\r\n           MQTT broker ["));  Debug( settingMQTTbroker );
   Debug(F("]\r\n             MQTT User ["));  Debug( settingMQTTuser );
   #ifdef SHOW_PASSWRDS
     Debug(F("]\r\n         MQTT PassWord ["));  Debug( settingMQTTpasswd );
@@ -139,6 +142,14 @@ void displayBoardInfo()
   #endif
   Debug(F("]\r\n             Top Topic ["));  Debug(settingMQTTtopTopic );
   Debug(F("]\r\n       Update Interval ["));  Debug(settingMQTTinterval);
+  Debugln(F("]\r"));
+  Debugln(F("==================================================================\r\n\r"));
+#endif
+#ifdef USE_INFLUXDB
+  Debugln(F("==================================================================\r"));\
+  Debug(F("\r\n     InfluxDB hostname ["));  Debug( settingInfluxDBhostname );
+  Debug(F("]\r\n        InfluxDB port  ["));  Debug( settingInfluxDBport );
+  Debug(F("]\r\n     InfluxDB database ["));  Debug( settingInfluxDBdatabasename );
   Debugln(F("]\r"));
   Debugln(F("==================================================================\r\n\r"));
 #endif

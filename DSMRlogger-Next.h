@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
-**  Program  : DSMRloggerAPI.h - definitions for DSMRloggerAPI
-**  Version  : v2.0.1
+**  Program  : DSMRlogger-Next.h - definitions for DSMRlogger-Next
+**  Version  : v2.1.0-rc0
 **
 **  Copyright (c) 2020 Willem Aandewiel
 **
@@ -192,6 +192,7 @@ void delayms(unsigned long);
   bool        showRaw = false;
   int8_t      showRawCount = 0;
   Timezone    localTZ;
+  char      cMsg[150], fChar[10];
 
 #ifdef USE_MQTT
   #include <PubSubClient.h>           // MQTT client publish and subscribe functionality
@@ -206,7 +207,13 @@ void delayms(unsigned long);
   static char      timeLastResponse[16]      = "";  
 #endif
 
-char      cMsg[150], fChar[10];
+#ifdef USE_INFLUXDB
+  char      settingInfluxDBhostname[101] = "";
+  uint16_t  settingInfluxDBport = 8086;
+  char      settingInfluxDBdatabasename[30] = "";
+#endif
+
+
 String    lastReset           = "";
 bool      spiffsNotPopulated  = false;
 bool      hasAlternativeIndex = false;
@@ -232,10 +239,10 @@ DECLARE_TIMER_SEC(updateSeconds,       1, CATCH_UP_MISSED_TICKS);
 DECLARE_TIMER_SEC(updateDisplay,       5);
 DECLARE_TIMER_MIN(reconnectWiFi,      30);
 DECLARE_TIMER_MIN(synchrNTP,          10, SKIP_MISSED_TICKS);
-DECLARE_TIMER_SEC(nextTelegram,       10);
+DECLARE_TIMER_SEC(nextTelegram,       10, CATCH_UP_MISSED_TICKS);
 DECLARE_TIMER_MIN(reconnectMQTTtimer,  2); // try reconnecting cyclus timer
-DECLARE_TIMER_SEC(publishMQTTtimer,   60, SKIP_MISSED_TICKS); // interval time between MQTT messages  
-DECLARE_TIMER_MIN(minderGasTimer,     10, CATCH_UP_MISSED_TICKS); 
+DECLARE_TIMER_SEC(publishMQTTtimer,   60, CATCH_UP_MISSED_TICKS); // interval time between MQTT messages  
+DECLARE_TIMER_MIN(minderGasTimer,     1, CATCH_UP_MISSED_TICKS);  // once minute
 DECLARE_TIMER_SEC(antiWearTimer,      61);
 
 /***************************************************************************

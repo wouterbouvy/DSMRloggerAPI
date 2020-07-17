@@ -1,13 +1,14 @@
 /*
 ***************************************************************************  
-**  Program  : settingsStuff, part of DSMRloggerAPI
-**  Version  : v2.0.1
+**  Program  : settingsStuff, part of DSMRlogger-Next
+**  Version  : v2.1.0-rc0
 **
 **  Copyright (c) 2020 Willem Aandewiel
 **
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************      
 * 1.0.11 added Mindergas Authtoken setting
+* 2.0.3 added influxdb settings
 */
 
 //=======================================================================
@@ -59,6 +60,12 @@ void writeSettings()
   file.print("MindergasAuthtoken = ");file.println(settingMindergasToken);  Debug(F("."));
 #endif
 
+#ifdef USE_INFLUXDB
+  file.print("InfluxDBhostname = ");file.println(settingInfluxDBhostname);  Debug(F("."));
+  file.print("InfluxDBport = ");file.println(settingInfluxDBport);  Debug(F("."));
+  file.print("InfluxDBdatabasename = ");file.println(settingInfluxDBdatabasename);  Debug(F("."));
+#endif
+
 file.close();  
   
   Debugln(F(" done"));
@@ -107,6 +114,12 @@ file.close();
     DebugTln(F("MindergasAuthtoken = ********")); 
   #endif
 #endif
+
+#ifdef USE_INFLUXDB
+    DebugT(F("InfluxDBhostname = "));  Debugln(settingInfluxDBhostname);
+    DebugT(F("InfluxDBport = "));  Debugln(settingInfluxDBport);
+    DebugT(F("InfluxDBdatabasename = "));  Debugln(settingInfluxDBdatabasename);
+#endif
   } // Verbose1
   
 } // writeSettings()
@@ -142,6 +155,12 @@ void readSettings(bool show)
   settingMQTTpasswd[0]     = '\0';
   settingMQTTinterval      =  0;
   snprintf(settingMQTTtopTopic, sizeof(settingMQTTtopTopic), "%s", settingHostname);
+
+#ifdef USE_INFLUXDB
+  settingInfluxDBhostname[0]  = '\0';
+  settingInfluxDBport         = 8086;
+  snprintf(settingInfluxDBdatabasename, sizeof(settingInfluxDBdatabasename), "%s", settingHostname);
+#endif
 
 #ifdef USE_MINDERGAS
   settingMindergasToken[0] = '\0';
@@ -230,6 +249,13 @@ void readSettings(bool show)
     CHANGE_INTERVAL_SEC(publishMQTTtimer, settingMQTTinterval);
     CHANGE_INTERVAL_MIN(reconnectMQTTtimer, 1);
 #endif
+
+#ifdef USE_INFLUXDB
+  if (words[0].equalsIgnoreCase("InfluxDBhostname"))    	strlcpy(settingInfluxDBhostname,     words[1].c_str(), sizeof(settingInfluxDBhostname));
+  if (words[0].equalsIgnoreCase("InfluxDBport"))          settingInfluxDBport                = words[1].toInt();  
+  if (words[0].equalsIgnoreCase("InfluxDBdatabasename"))  strlcpy(settingInfluxDBdatabasename, words[1].c_str(), sizeof(settingInfluxDBdatabasename));
+  initInfluxDB();
+#endif
     
   } // while available()
   
@@ -282,6 +308,11 @@ void readSettings(bool show)
   Debugln(F("\r\n==== Mindergas settings ==============================================\r"));
   Debugf("         Mindergas Authtoken : %s\r\n", settingMindergasToken);
 #endif  
+#ifdef USE_INFLUXDB
+  Debugln(F("\r\n==== InfluxDB settings ===============================================\r"));
+  Debugf("             InfluxDB URL:IP : %s:%d\r\n", settingInfluxDBhostname, settingInfluxDBport);
+  Debugf("       InfluxDB Databasename : %s\r\n", settingInfluxDBdatabasename);
+#endif
   
   Debugln(F("-\r"));
 
@@ -381,6 +412,21 @@ void updateSetting(const char *field, const char *newValue)
     CHANGE_INTERVAL_SEC(publishMQTTtimer, settingMQTTinterval);
   }
   if (!stricmp(field, "mqtt_toptopic"))     strCopy(settingMQTTtopTopic, 20, newValue);  
+#endif
+
+#ifdef USE_INFLUXDB
+  if (!stricmp(field, "influxdb_hostname")) {
+    strlcpy(settingInfluxDBhostname, newValue, sizeof(settingInfluxDBhostname));
+    initInfluxDB();
+  }
+  if (!stricmp(field, "influxdb_port")) {
+    settingInfluxDBport = String(newValue).toInt();
+    initInfluxDB();
+  }
+  if (!stricmp(field, "influxdb_databasename")) {
+    strlcpy(settingInfluxDBdatabasename, newValue, sizeof(settingInfluxDBdatabasename));
+    initInfluxDB();
+  }
 #endif
 
   writeSettings();

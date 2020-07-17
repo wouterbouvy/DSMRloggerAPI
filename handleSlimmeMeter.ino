@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
-**  Program  : handleSlimmeMeter - part of DSMRloggerAPI
-**  Version  : v2.0.1
+**  Program  : handleSlimmeMeter - part of DSMRlogger-Next
+**  Version  : v2.1.0-rc0
 **
 **  Copyright (c) 2020 Willem Aandewiel
 **
@@ -25,6 +25,13 @@ void handleSlimmemeter()
 
 } // handleSlimmemeter()
 
+//==================================================================================
+
+void tiggerNextTelegram()
+{
+      // //-- enable DTR to read a telegram from the Slimme Meter
+    slimmeMeter.enable(true); 
+} // tiggerNextTelegram()
 
 //==================================================================================
 void processSlimmemeterRaw()
@@ -42,7 +49,7 @@ void processSlimmemeterRaw()
   
   if (settingOledType > 0)
   {
-    oled_Print_Msg(0, "<DSMRloggerAPI>", 0);
+    oled_Print_Msg(0, "<DSMRlogger-Next>", 0);
     oled_Print_Msg(1, "-------------------------",0);
     oled_Print_Msg(2, "Raw Format",0);
     snprintf(cMsg, sizeof(cMsg), "Raw Count %4d", showRawCount);
@@ -104,12 +111,7 @@ void processSlimmemeter()
         
     if (slimmeMeter.parse(&DSMRdata, &DSMRerror))   // Parse succesful, print result
     {
-      if (telegramCount > (UINT32_MAX - 10)) 
-      {
-        delay(1000);
-        ESP.reset();
-        delay(1000);
-      }
+       
       digitalWrite(LED_BUILTIN, LED_OFF);
       if (DSMRdata.identification_present)
       {
@@ -177,7 +179,7 @@ void processSlimmemeter()
         
   } // if (slimmeMeter.available()) 
   
-} // handleSlimmeMeter()
+} // processSlimmeMeter()
 
 #endif
 

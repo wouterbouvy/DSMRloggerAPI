@@ -1,15 +1,35 @@
-# DSMRloggerAPI
-Firmware for the DSMR-logger using only API call's
+# DSMRlogger-Next
+The Next firmware for the DSMR-logger
 
+
+This is the FORK of Willem's project implementing new features, like direct InfluxDB writer and fixing bugs and trying to improve the codebase.
+
+With the launch of the Final version of DSMRloggerAPI, version 2.0.1 it completed the last and final update of Willem and released it to the public.
+
+This fork is picking up where Willem stopped development, fixing bugs and adding new features. 
+
+The first release DSMRlogger-Next will add:
+- Direct writting to InfluxDB
+- Fixing DSMR handling so that DSMR spec 4.2 meter will work properly once more.
+
+If you have any idea's or suggestions, please do a Pull Request on the project. 
+
+The original code and release of DSMRloggerAPI can be found here:
 [Here](https://willem.aandewiel.nl/index.php/2019/04/09/dsmr-logger-v4-slimme-meter-uitlezer/) and
 [here](https://willem.aandewiel.nl/index.php/2020/02/28/restapis-zijn-hip-nieuwe-firmware-voor-de-dsmr-logger/)
 you can find information about this project.
 
-Documentation can be found [here](https://mrwheel-docs.gitbook.io/dsmrloggerapi/) (in progress)!
+Documentation can be found [here](https://mrwheel-docs.gitbook.io/DSMRlogger-Next/) (in progress)!
 
 <table>
 <tr><th>Versie</th><th>Opmerking</th></tr>
 <tr>
+<td valign="top">2.1.0-rc0</td>
+   <td>Release Candidate (rc0)
+   <br>Implementing direct InfluxDB support 
+   <br>Bugfix reading DSMR 4.2 correctly (timing issues)
+   </td>
+</tr>
    <td valign="top">2.0.1</td>
    <td>First Final Release
    <br>Implementing DSMRloggerWS actual api (for backwards compatibility)

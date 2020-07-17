@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
-**  Program  : timeStuff, part of DSMRloggerAPI
-**  Version  : v2.0.1
+**  Program  : timeStuff, part of DSMRlogger-Next
+**  Version  : v2.1.0-rc0
 **
 **  Copyright (c) 2020 Willem Aandewiel
 **
@@ -163,7 +163,7 @@ time_t epoch(const char *timeStamp, int8_t len, bool syncTime)
   time_t nT;
   time_t savEpoch = now();
   
-  setTime(HourFromTimestamp(fullTimeStamp)
+  localTZ.setTime(HourFromTimestamp(fullTimeStamp)
          ,MinuteFromTimestamp(fullTimeStamp)
          ,SecondFromTimestamp(fullTimeStamp)
          ,DayFromTimestamp(fullTimeStamp)
@@ -174,12 +174,15 @@ time_t epoch(const char *timeStamp, int8_t len, bool syncTime)
   nT = now();
   if (!syncTime)
   {
-    setTime(savEpoch);
+    localTZ.setTime(savEpoch);
   }
 
-  DebugT("Amsterdam time:");Debugln(localTZ.dateTime());
-  DebugT("UTC       time:");Debugln(UTC.dateTime());
-
+  if (Verbose2)
+  { 
+    DebugT("Amsterdam time:");Debugln(localTZ.dateTime());
+    DebugT("UTC       time:");Debugln(UTC.dateTime());
+  }
+  
   return nT;
 
 } // epoch()

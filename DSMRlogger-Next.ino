@@ -35,7 +35,7 @@
 /*
 **  You can find more info in the following links (all in Dutch): 
 **   https://willem.aandewiel.nl/index.php/2020/02/28/restapis-zijn-hip-nieuwe-firmware-voor-de-dsmr-logger/
-**   https://mrwheel-docs.gitbook.io/dsmrloggerapi/
+**   https://mrwheel-docs.gitbook.io/DSMRloggerAPI/
 **   https://mrwheel.github.io/DSMRloggerWS/
 */
 /******************** compiler options  ********************************************/
@@ -47,7 +47,6 @@
 //  #define HAS_NO_SLIMMEMETER        // define for testing only!
 #define USE_INFLUXDB                  // define if you want to use Influxdb (configure through webinterface)
 #define USE_MQTT                  // define if you want to use MQTT (configure through webinterface)
-#define USE_INFLUXDB                  // define if you want to use Influxdb (configure through webinterface)
 #define USE_MINDERGAS             // define if you want to update mindergas (configure through webinterface)
 //  #define USE_SYSLOGGER             // define if you want to use the sysLog library for debugging
 //  #define SHOW_PASSWRDS             // well .. show the PSK key and MQTT password, what else?
@@ -109,7 +108,7 @@ void openSysLog(bool empty)
     DebugTln("Succes opening sysLog!");
     if (settingOledType > 0)
     {
-      oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+      oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
       oled_Print_Msg(3, "Syslog OK!", 500);
     }
   }
@@ -118,7 +117,7 @@ void openSysLog(bool empty)
     DebugTln("Error opening sysLog!");
     if (settingOledType > 0)
     {
-      oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+      oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
       oled_Print_Msg(3, "Error Syslog", 1500);
     }
   }
@@ -167,7 +166,7 @@ void setup()
   {
     oled_Init();
     oled_Clear();  // clear the screen so we can paint the menu.
-    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+    oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
     int8_t sPos = String(_FW_VERSION).indexOf(' ');
     snprintf(cMsg, sizeof(cMsg), "(c)2020 [%s]", String(_FW_VERSION).substring(0,sPos).c_str());
     oled_Print_Msg(1, cMsg, 0);
@@ -189,7 +188,7 @@ void setup()
   startTelnet();
   if (settingOledType > 0)
   {
-    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+    oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
     oled_Print_Msg(3, "telnet (poort 23)", 2500);
   }
   
@@ -200,7 +199,7 @@ void setup()
     SPIFFSmounted = true;
     if (settingOledType > 0)
     {
-      oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+      oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
       oled_Print_Msg(3, "SPIFFS mounted", 1500);
     }    
   } else { 
@@ -208,7 +207,7 @@ void setup()
     SPIFFSmounted = false;
     if (settingOledType > 0)
     {
-      oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+      oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
       oled_Print_Msg(3, "SPIFFS FAILED!", 2000);
     }
   }
@@ -232,7 +231,7 @@ void setup()
   {
     if (settingOledFlip)  oled_Init();  // only if true restart(init) oled screen
     oled_Clear();                       // clear the screen 
-    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+    oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
     oled_Print_Msg(1, "Verbinden met WiFi", 500);
   }
   digitalWrite(LED_BUILTIN, LED_ON);
@@ -240,7 +239,7 @@ void setup()
 
   if (settingOledType > 0)
   {
-    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+    oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
     oled_Print_Msg(1, WiFi.SSID(), 0);
     snprintf(cMsg, sizeof(cMsg), "IP %s", WiFi.localIP().toString().c_str());
     oled_Print_Msg(2, cMsg, 1500);
@@ -289,7 +288,7 @@ void setup()
     DebugTln(F("ERROR!!! No NTP server reached!\r\n\r"));   //USE_NTP
     if (settingOledType > 0)                                //USE_NTP
     {                                                       //USE_NTP
-      oled_Print_Msg(0, " <DSMRloggerAPI>", 0);              //USE_NTP
+      oled_Print_Msg(0, " <DSMRlogger-Next>", 0);              //USE_NTP
       oled_Print_Msg(2, "geen reactie van", 100);           //USE_NTP
       oled_Print_Msg(2, "NTP server's", 100);               //USE_NTP 
       oled_Print_Msg(3, "Reboot DSMR-logger", 2000);        //USE_NTP
@@ -300,7 +299,7 @@ void setup()
   }                                                         //USE_NTP
   if (settingOledType > 0)                                  //USE_NTP
   {                                                         //USE_NTP
-    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);                //USE_NTP
+    oled_Print_Msg(0, " <DSMRlogger-Next>", 0);                //USE_NTP
     oled_Print_Msg(3, "NTP gestart", 1500);                 //USE_NTP
   }                                                         //USE_NTP
   prevNtpHour = hour();                                     //USE_NTP
@@ -378,7 +377,7 @@ void setup()
   {
     snprintf(cMsg, sizeof(cMsg), "DT: %02d%02d%02d%02d0101W", thisYear
                                                             , thisMonth, thisDay, thisHour);
-    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);
+    oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
     oled_Print_Msg(3, cMsg, 1500);
   }
 
@@ -388,7 +387,7 @@ void setup()
   connectMQTT();                                                //USE_MQTT
   if (settingOledType > 0)                                      //USE_MQTT
   {                                                             //USE_MQTT
-    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);                    //USE_MQTT
+    oled_Print_Msg(0, " <DSMRlogger-Next>", 0);                    //USE_MQTT
     oled_Print_Msg(3, "MQTT server set!", 1500);                //USE_MQTT
   }                                                             //USE_MQTT
 #endif                                                          //USE_MQTT
@@ -402,7 +401,7 @@ void setup()
     DebugTln(F("SPIFFS correct populated -> normal operation!\r"));
     if (settingOledType > 0)
     {
-      oled_Print_Msg(0, " <DSMRloggerAPI>", 0); 
+      oled_Print_Msg(0, " <DSMRlogger-Next>", 0); 
       oled_Print_Msg(1, "OK, SPIFFS correct", 0);
       oled_Print_Msg(2, "Verder met normale", 0);
       oled_Print_Msg(3, "Verwerking ;-)", 2500);
@@ -447,7 +446,7 @@ void setup()
   if (settingOledType > 0)                                  //HAS_OLED
   {                                                         //HAS_OLED
     oled_Clear();                                           //HAS_OLED
-    oled_Print_Msg(0, " <DSMRloggerAPI>", 0);                //HAS_OLED
+    oled_Print_Msg(0, " <DSMRlogger-Next>", 0);                //HAS_OLED
     oled_Print_Msg(2, "HTTP server ..", 0);                 //HAS_OLED
     oled_Print_Msg(3, "gestart (poort 80)", 0);             //HAS_OLED
   }                                                         //HAS_OLED
@@ -486,14 +485,6 @@ void setup()
 
 //================ End of InfluxDB ================================
 
-//================ Start InfluxDB  =================================
-
-#ifdef USE_INFLUXDB
-  initInfluxDB();
-#endif
-
-//================ End of InfluxDB ================================
-
 //================ The final part of the Setup =====================
 
   snprintf(cMsg, sizeof(cMsg), "Last reset reason: [%s]\r", ESP.getResetReason().c_str());
@@ -501,7 +492,7 @@ void setup()
 
   if (settingOledType > 0)
   {
-    oled_Print_Msg(0, "<DSMRloggerAPI>", 0);
+    oled_Print_Msg(0, "<DSMRlogger-Next>", 0);
     oled_Print_Msg(1, "Startup complete", 0);
     oled_Print_Msg(2, "Wait for first", 0);
     oled_Print_Msg(3, "telegram .....", 500);
@@ -538,30 +529,69 @@ void delayms(unsigned long delay_ms)
 
 //========================================================================================
 
+//===[ blink the LED ]====================================================================
+void blinkLED()
+{
+  // Blink once
+  digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+}
+
+//===[ If wifi is disconneted then blink 10 times ]=======================================
+
+void doCheckWifiConnection()
+{
+  //when wifi is not connected, the blink fast
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    for(int b=0; b<10; b++) { blinkLED(); delay(75);}
+  }
+  
+}
+
+//===[ If wifi is not connected, then try to reconnect ]=================================
+
+void doReconnectWifi()
+{
+  if (WiFi.status() == WL_CONNECTED) return;
+  // if not connected, then try reconnect
+  writeToSysLog("Restart wifi with [%s]...", settingHostname);
+  startWiFi(settingHostname, 10);
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    writeToSysLog("%s", "Wifi still not connected! Waiting for next attempt.");
+  }
+  else 
+  {
+        snprintf(cMsg, sizeof(cMsg), "IP:[%s], Gateway:[%s]", WiFi.localIP().toString().c_str()
+                                                            , WiFi.gatewayIP().toString().c_str());
+        writeToSysLog("%s", cMsg);
+
+        //On reconnect wifi, also reconnect InfluxDB
+        initInfluxDB();
+  }
+}
+
 //==[ Do Telegram Processing ]===============================================================
 void doTaskTelegram()
 {
+  //Trigger next telegram (or just generate data in case of no slimmemeter)
   if (Verbose1) DebugTln("doTaskTelegram");
   #if defined(HAS_NO_SLIMMEMETER)
-    handleTestdata();
+    handleTestdata();  
   #else
-    //-- enable DTR to read a telegram from the Slimme Meter
-    slimmeMeter.enable(true); 
-    slimmeMeter.loop();
-    handleSlimmemeter();
+    tiggerNextTelegram();
   #endif
-  if (WiFi.status() != WL_CONNECTED)
-  {
-    for(int b=0; b<10; b++) { digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN)); delay(75);}
-  }
-  digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+  blinkLED();
 }
+
 
 //===[ Do System tasks ]=============================================================
 void doSystemTasks()
 {
   #ifndef HAS_NO_SLIMMEMETER
-    slimmeMeter.loop();
+    //It's async serial device, so it can receive the next telegram, when done, trigger processing.
+    //Do not use just slimmeMeter.loop(), it only "receives data", not process when done.
+    handleSlimmemeter();  
   #endif
   #ifdef USE_MQTT
     MQTTclient.loop();
@@ -587,19 +617,17 @@ void loop ()
 
   loopCount++;
 
+  //--- update upTime counter
+  if DUE(updateSeconds)
+    upTimeSeconds++;
+    
   //--- verwerk volgend telegram
   if DUE(nextTelegram)
   {
     doTaskTelegram();
-    #ifdef USE_INFLUXDB
-      handleInfluxDB();
-    #endif
-  }
-
-  //--- update upTime counter
-  if DUE(updateSeconds)
-  {
-    upTimeSeconds++;
+#ifdef USE_INFLUXDB
+    handleInfluxDB();
+#endif
   }
 
 //--- if an OLED screen attached, display the status
@@ -611,27 +639,15 @@ void loop ()
     }
   }
 
-//--- if mindergas then check
+  //--- if mindergas then check
 #ifdef USE_MINDERGAS
-  if ( DUE(minderGasTimer) )
-  {
+  if DUE(minderGasTimer) 
     handleMindergas();
-  }
 #endif
 
   //--- if connection lost, try to reconnect to WiFi
-  if ( DUE(reconnectWiFi) && (WiFi.status() != WL_CONNECTED) )
-  {
-    writeToSysLog("Restart wifi with [%s]...", settingHostname);
-    startWiFi(settingHostname, 10);
-    if (WiFi.status() != WL_CONNECTED)
-          writeToSysLog("%s", "Wifi still not connected!");
-    else {
-          snprintf(cMsg, sizeof(cMsg), "IP:[%s], Gateway:[%s]", WiFi.localIP().toString().c_str()
-                                                              , WiFi.gatewayIP().toString().c_str());
-          writeToSysLog("%s", cMsg);
-    }
-  }
+  if DUE(reconnectWiFi) 
+    doReconnectWifi();
 
 //--- if NTP set, see if it needs synchronizing
 #if defined(USE_NTP_TIME)                                           //USE_NTP

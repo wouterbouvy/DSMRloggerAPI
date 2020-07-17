@@ -1,7 +1,7 @@
 /* 
 ***************************************************************************  
-**  Program  : jsonStuff, part of DSMRloggerAPI
-**  Version  : v2.0.1
+**  Program  : jsonStuff, part of DSMRlogger-Next
+**  Version  : v2.1.0-rc0
 **
 **  Copyright (c) 2020 Willem Aandewiel
 **

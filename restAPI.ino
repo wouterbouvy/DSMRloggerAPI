@@ -1,7 +1,7 @@
 /* 
 ***************************************************************************  
-**  Program  : restAPI, part of DSMRloggerAPI
-**  Version  : v2.0.1
+**  Program  : restAPI, part of DSMRlogger-Next
+**  Version  : v2.1.0-rc0
 **
 **  Copyright (c) 2020 Willem Aandewiel
 **
@@ -341,6 +341,9 @@ void sendDeviceInfo()
 #ifdef USE_MINDERGAS
     strConcat(compileOptions, sizeof(compileOptions), "[USE_MINDERGAS]");
 #endif
+#ifdef USE_INFLUXDB
+    strConcat(compileOptions, sizeof(compileOptions), "[USE_INFLUXDB]");
+#endif
 #ifdef USE_SYSLOGGER
     strConcat(compileOptions, sizeof(compileOptions), "[USE_SYSLOGGER]");
 #endif
@@ -381,21 +384,19 @@ void sendDeviceInfo()
   sendNestedJsonObj("flashchipspeed", formatFloat((ESP.getFlashChipSpeed() / 1000.0 / 1000.0), 0), "MHz");
 
   FlashMode_t ideMode = ESP.getFlashChipMode();
-  sendNestedJsonObj("flashchipmode", flashMode[ideMode]);
-  sendNestedJsonObj("boardtype",
-#ifdef ARDUINO_ESP8266_NODEMCU
-     "ESP8266_NODEMCU"
+  sendNestedJsonObj("flashchipmode", flashMode[ideMode]); 
+#if defined(ARDUINO_ESP8266_NODEMCU)
+  const char* strBoardtype = "ESP8266_NODEMCU";
+#elif defined(ARDUINO_ESP8266_GENERIC)
+  const char* strBoardtype = "ESP8266_GENERIC";
+#elif defined(ESP8266_ESP01)
+  const char* strBoardtype = "ESP8266_ESP01";
+#elif defined(ESP8266_ESP12)
+  const char* strBoardtype = "ESP8266_ESP12";
+#else
+  const char* strBoardtype = "Unknown board";
 #endif
-#ifdef ARDUINO_ESP8266_GENERIC
-     "ESP8266_GENERIC"
-#endif
-#ifdef ESP8266_ESP01
-     "ESP8266_ESP01"
-#endif
-#ifdef ESP8266_ESP12
-     "ESP8266_ESP12"
-#endif
-  );
+  sendNestedJsonObj("boardtype", strBoardtype);
   sendNestedJsonObj("compileoptions", compileOptions);
   sendNestedJsonObj("ssid", WiFi.SSID().c_str());
 #ifdef SHOW_PASSWRDS
@@ -423,6 +424,13 @@ void sendDeviceInfo()
   sendNestedJsonObj("mindergas_response",     txtResponseMindergas);
   sendNestedJsonObj("mindergas_status",       cMsg);
 #endif
+
+#ifdef USE_INFLUXDB
+  sendNestedJsonObj("influxdb_hostname",           settingInfluxDBhostname);
+  sendNestedJsonObj("influxdb_port",              (int)settingInfluxDBport);
+  sendNestedJsonObj("influxdb_databasename",      settingInfluxDBdatabasename);
+#endif
+
 
   sendNestedJsonObj("reboots", (int)nrReboots);
   sendNestedJsonObj("lastreset", lastReset);
@@ -467,15 +475,19 @@ void sendDeviceSettings()
   sendJsonSettingObj("oled_flip_screen",  settingOledFlip,        "i", 0, 1);
   sendJsonSettingObj("index_page",        settingIndexPage,       "s", sizeof(settingIndexPage) -1);
   sendJsonSettingObj("mqtt_broker",       settingMQTTbroker,      "s", sizeof(settingMQTTbroker) -1);
-  sendJsonSettingObj("mqtt_broker_port",  settingMQTTbrokerPort,  "i", 1, 9999);
+  sendJsonSettingObj("mqtt_broker_port",  settingMQTTbrokerPort,  "i", 1, 65535);
   sendJsonSettingObj("mqtt_user",         settingMQTTuser,        "s", sizeof(settingMQTTuser) -1);
   sendJsonSettingObj("mqtt_passwd",       settingMQTTpasswd,      "s", sizeof(settingMQTTpasswd) -1);
   sendJsonSettingObj("mqtt_toptopic",     settingMQTTtopTopic,    "s", sizeof(settingMQTTtopTopic) -1);
   sendJsonSettingObj("mqtt_interval",     settingMQTTinterval,    "i", 0, 600);
-#if defined (USE_MINDERGAS )
+#ifdef USE_MINDERGAS
   sendJsonSettingObj("mindergastoken",  settingMindergasToken,    "s", sizeof(settingMindergasToken) -1);
 #endif
-
+#ifdef USE_INFLUXDB
+  sendJsonSettingObj("influxdb_hostname",           settingInfluxDBhostname,       "s", sizeof(settingInfluxDBhostname)-1);
+  sendJsonSettingObj("influxdb_port",              (int)settingInfluxDBport,      "i", 1, 65535);
+  sendJsonSettingObj("influxdb_databasename",      settingInfluxDBdatabasename,   "s", sizeof(settingInfluxDBdatabasename)-1);
+#endif
   sendEndJsonObj();
 
 } // sendDeviceSettings()
@@ -718,7 +730,7 @@ void sendApiNotFound(const char *URI)
   httpServer.sendContent(cMsg);
   
   strCopy(cMsg,   sizeof(cMsg), "<a href=");
-  strConcat(cMsg, sizeof(cMsg), "\"https://mrwheel-docs.gitbook.io/dsmrloggerapi/beschrijving-restapis\">");
+  strConcat(cMsg, sizeof(cMsg), "\"https://mrwheel-docs.gitbook.io/DSMRloggerAPI/beschrijving-restapis\">");
   strConcat(cMsg, sizeof(cMsg), "restAPI</a> call.");
   httpServer.sendContent(cMsg);
   

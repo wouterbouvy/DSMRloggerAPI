@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
-**  Program  : handleInfluxDB - part of DSMRloggerAPI
-**  Version  : v2.0.2
+**  Program  : handleInfluxDB - part of DSMRlogger-Next
+**  Version  : v2.1.0-rc0
 **
 **  Copyright (c) 2020 Robert van den Breemen
 **
@@ -40,18 +40,23 @@ InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB_NAME);
 //  Central Europe: "CET-1CEST,M3.5.0,M10.5.0/3"
 #define TZ_INFO "CET-1CEST,M3.5.0,M10.5.0/3"
 #define WRITE_PRECISION WritePrecision::S
-#define MAX_BATCH_SIZE 5
-#define WRITE_BUFFER_SIZE 10
+#define MAX_BATCH_SIZE 16
+#define WRITE_BUFFER_SIZE 32
 
 time_t thisEpoch;
 
 void initInfluxDB()
 {
-  // Set InfluxDB 1 authentication params
-  // Only needed when query's are done?
-  //client.setConnectionParamsV1(INFLUXDB_URL, INFLUXDB_DB_NAME, INFLUXDB_USER, INFLUXDB_PASSWORD);
+  if ( sizeof(settingInfluxDBhostname) < 8 )  return; 
 
+ // Set InfluxDB 1 authentication params
+  // Only needed when query's are done?
+  //client.setConnectionParamsV1(INFLUXDB_URL, INFLUXDB_DB_NAME, INFLUXDB_USER, INFLUXDB_PASSWORD);   
+  snprintf(cMsg, sizeof(cMsg), "http://%s:%d", settingInfluxDBhostname , settingInfluxDBport);
+  DebugTf("InfluxDB Connection Setup: [%s] - database: [%s]", cMsg , settingInfluxDBdatabasename);
+  client.setConnectionParamsV1(cMsg, settingInfluxDBdatabasename);
   // Connect to influxdb server connection
+
   if (client.validateConnection()) {
     Serial.print("Connected to InfluxDB: ");
     Serial.println(client.getServerUrl());
@@ -78,8 +83,10 @@ struct writeInfluxDataPoints {
         pointItem.addTag("instance",Item::name);     
         pointItem.addField("value", i.val());
 //        pointItem.addField((String)(Item::name), i.val());
-        DebugT("Writing to influxdb:");
-        Debugln(pointItem.toLineProtocol());
+        if (Verbose1) {
+          DebugT("Writing to influxdb:");
+          Debugln(pointItem.toLineProtocol());          
+        }
         if (!client.writePoint(pointItem)) {
           DebugT("InfluxDB write failed: ");
           Debugln(client.getLastErrorMessage());
@@ -92,26 +99,22 @@ struct writeInfluxDataPoints {
 void handleInfluxDB()
 {
   static uint32_t lastTelegram = 0;
-//   DebugTf("telegramCount=[%d] telegramErrors=[%d] lastTelegram=[%d]\r\n", telegramCount, telegramErrors, lastTelegram);
-  
-//  if ((telegramCount - telegramErrors) > 1) 
-//  {
-//    Debugln("InfluxDB: Waiting for first telegram...");  
-//    return;
-//  }
+  if (!client.validateConnection()) return; // only write if there is a valid connection to InfluxDB
   if ((telegramCount - lastTelegram)> 0)
   {
     //New telegram received, let's forward that to influxDB
     lastTelegram = telegramCount;
     //Setup the timestamp for this telegram, so all points for this batch are the same.
     thisEpoch = UTC.now();  
-    DebugTf("Epoc = %d (this) %d (NL) %d (UTC) \r\n", (int)thisEpoch, (int)localTZ.now(), (int)UTC.now());
+    DebugTf("Writing telegram to influxddb - Epoc = %d (this) %d (NL) %d (UTC) \r\n", (int)thisEpoch, (int)localTZ.now(), (int)UTC.now());
+    uint32_t timeThis = millis();
     DSMRdata.applyEach(writeInfluxDataPoints());
     // Check whether buffer in not empty
     if (!client.isBufferEmpty()) {
       // Write all remaining points to db
       client.flushBuffer();
     }
+    DebugTf("Influxdb write took [%d] ms\r\n", (int)(millis()-timeThis));
   }
   
 }
