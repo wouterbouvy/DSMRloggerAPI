@@ -1,6 +1,9 @@
 # DSMRloggerAPI
 Firmware for the DSMR-logger using only API call's
 
+This is the FORK of Willem's project implementing new features, like direct InfluxDB writer.
+
+
 [Here](https://willem.aandewiel.nl/index.php/2019/04/09/dsmr-logger-v4-slimme-meter-uitlezer/) and
 [here](https://willem.aandewiel.nl/index.php/2020/02/28/restapis-zijn-hip-nieuwe-firmware-voor-de-dsmr-logger/)
 you can find information about this project.
@@ -10,6 +13,12 @@ Documentation can be found [here](https://mrwheel-docs.gitbook.io/dsmrloggerapi/
 <table>
 <tr><th>Versie</th><th>Opmerking</th></tr>
 <tr>
+<td valign="top">2.1.0-rc0</td>
+   <td>Release Candidate (rc0)
+   <br>Implementing direct InfluxDB support 
+   <br>Bugfix reading DSMR 4.2 correctly (timing issues)
+   </td>
+</tr>
    <td valign="top">2.0.1</td>
    <td>First Final Release
    <br>Implementing DSMRloggerWS actual api (for backwards compatibility)
