@@ -26,7 +26,7 @@ Documentation of DSMRloggerAPIcan be found [here](https://mrwheel-docs.gitbook.i
 <tr><th>Versie</th><th>Opmerking</th></tr>
 <tr>
 <td valign="top">2.1.0-rc0</td>
-   <td>Release Candidate (rc0)
+   <td>Release Candidate (rc0) of DSMRlogger-Next
    <br>Implementing direct InfluxDB support 
    <br>Bugfix reading DSMR 4.2 correctly (timing issues)
    </td>
