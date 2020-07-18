@@ -2,7 +2,9 @@
 The Next firmware for the DSMR-logger
 
 
-**This is the FORK of the original DSMRlogger from Willem Aandewiel.** The intent of this for is to start implementing new features, fixing bugs and trying to improve the codebase.
+**This is the FORK of the original DSMRlogger from Willem Aandewiel.** 
+
+The intent of this for is to start implementing and extend with new features, fixing bugs and trying to improve the codebase.
 
 With the launch of the Final version of DSMRloggerAPI, version 2.0.1. This completed the last and final update of Willem and released it to the public DSMRlogger, as it complete the REST API.This fork is picking up where Willem finished the development of the REST finished, by fixing bugs, improvement to the codebas and starting to add new features to the firmware.
 
