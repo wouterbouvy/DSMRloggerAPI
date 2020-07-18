@@ -12,7 +12,7 @@
     <!-- <div class="dev-header"> -->
     <div class="header">
       <h1>
-        <span id="sysName">DSMR-logger(API)</span> &nbsp; &nbsp; &nbsp;
+        <span id="sysName">DSMR-logger(Next)</span> &nbsp; &nbsp; &nbsp;
         <span id="devName"    style='font-size: small;'>-</span> &nbsp;
         <span id="devVersion" style='font-size: small;'>[version]</span>
         <span id="source"     style='font-size: small;'> &nbsp; &nbsp; [-]</span>
