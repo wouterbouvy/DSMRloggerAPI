@@ -2,7 +2,7 @@
 ***************************************************************************  
 **  Program  : DSMRlogger-Next (the Next version of DSMR Logger)
 */
-#include "version.h" 
+#include "version.h"
 #define _FW_VERSION _VERSION
 /*
 **  Based on the original:
