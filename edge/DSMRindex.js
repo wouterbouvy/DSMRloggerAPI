@@ -1751,7 +1751,7 @@ http://DSMR-API.local/api/v1/dev/settings</pre>", false);
   {
     if (GitHubVersion != 0) return;
     
-    fetch("https://cdn.jsdelivr.net/gh/mrWheel/DSMRloggerAPI@master/data/DSMRversion.dat")
+    fetch("https://cdn.jsdelivr.net/gh/rvdbreemen/DSMRlogger-Next@master/data/DSMRversion.dat")
       .then(response => {
         if (response.ok) {
           return response.text();
