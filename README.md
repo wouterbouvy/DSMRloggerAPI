@@ -2,7 +2,7 @@
 The Next firmware for the DSMR-logger
 
 
-This is the FORK of the original DSMRlogger from Willem Aandewiel. The intent of this for is to start implementing new features, fixing bugs and trying to improve the codebase.
+**This is the FORK of the original DSMRlogger from Willem Aandewiel.** The intent of this for is to start implementing new features, fixing bugs and trying to improve the codebase.
 
 With the launch of the Final version of DSMRloggerAPI, version 2.0.1 it completed the last and final update of Willem and released it to the public.
 
@@ -25,7 +25,7 @@ Documentation of DSMRloggerAPIcan be found [here](https://mrwheel-docs.gitbook.i
 <table>
 <tr><th>Versie</th><th>Opmerking</th></tr>
 <tr>
-<td valign="top">2.1.0-rc0</td>
+   <td valign="top">2.1.0-rc0</td>
    <td>Release Candidate (rc0) of DSMRlogger-Next
    <br>Implementing direct InfluxDB support 
    <br>Bugfix reading DSMR 4.2 correctly (timing issues)
