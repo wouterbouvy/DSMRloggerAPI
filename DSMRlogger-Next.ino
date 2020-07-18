@@ -5,10 +5,13 @@
 #include "version.h" 
 #define _FW_VERSION _VERSION
 /*
-**  Copyright (c) 2020 Robert van den Breemen
-**
 **  Based on the original:
 **          DSMRLoggerAPI - Copyright (c) 2020 Willem Aandewiel
+**
+**  The Next development:  
+**          DSMRlogger-Next - Copyright (c) 2020 Robert van den Breemen
+**
+**  To go beyond the original with new features and fixing some issues.  
 **
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************      
