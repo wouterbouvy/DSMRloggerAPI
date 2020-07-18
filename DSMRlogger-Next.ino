@@ -35,7 +35,7 @@
 /*
 **  You can find more info in the following links (all in Dutch): 
 **   https://willem.aandewiel.nl/index.php/2020/02/28/restapis-zijn-hip-nieuwe-firmware-voor-de-dsmr-logger/
-**   https://mrwheel-docs.gitbook.io/DSMRloggerAPI/
+**   https://mrwheel-docs.gitbook.io/dsmrloggerapi/
 **   https://mrwheel.github.io/DSMRloggerWS/
 */
 /******************** compiler options  ********************************************/

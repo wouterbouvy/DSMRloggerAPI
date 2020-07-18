@@ -730,7 +730,7 @@ void sendApiNotFound(const char *URI)
   httpServer.sendContent(cMsg);
   
   strCopy(cMsg,   sizeof(cMsg), "<a href=");
-  strConcat(cMsg, sizeof(cMsg), "\"https://mrwheel-docs.gitbook.io/DSMRloggerAPI/beschrijving-restapis\">");
+  strConcat(cMsg, sizeof(cMsg), "\"https://mrwheel-docs.gitbook.io/dsmrloggerapi/beschrijving-restapis\">");
   strConcat(cMsg, sizeof(cMsg), "restAPI</a> call.");
   httpServer.sendContent(cMsg);
   
