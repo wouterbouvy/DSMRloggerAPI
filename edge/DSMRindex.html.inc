@@ -346,7 +346,7 @@
   </span> <!-- end Settings Page -->
   
   <!--
-  <script src="https://cdn.jsdelivr.net/gh/rvdbreemen/DSMRlogger-Nextt@master/edge/DSMRedge.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/rvdbreemen/DSMRlogger-Next@master/edge/DSMRindex.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/rvdbreemen/DSMRlogger-Next@master/edge/DSMRgraphics.min.js"></script>
   -->
 
