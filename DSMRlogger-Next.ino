@@ -169,12 +169,12 @@ void setup()
   {
     oled_Init();
     oled_Clear();  // clear the screen so we can paint the menu.
-    oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
+    oled_Print_Msg(0, "<DSMRlogger-Next>", 0);
     int8_t sPos = String(_FW_VERSION).indexOf(' ');
-    snprintf(cMsg, sizeof(cMsg), "(c)2020 [%s]", String(_FW_VERSION).substring(0,sPos).c_str());
+    snprintf(cMsg, sizeof(cMsg), "[%s]", String(_FW_VERSION).substring(0,sPos).c_str());
     oled_Print_Msg(1, cMsg, 0);
-    oled_Print_Msg(2, " Willem Aandewiel", 0);
-    oled_Print_Msg(3, " >> Have fun!! <<", 1000);
+    oled_Print_Msg(2, "The next DSMRlogger", 0);
+    oled_Print_Msg(3, " >> Enjoy logging! <<", 1000);
     yield();
   }
   else  // don't blink if oled-screen attatched
@@ -628,9 +628,6 @@ void loop ()
   if DUE(nextTelegram)
   {
     doTaskTelegram();
-#ifdef USE_INFLUXDB
-    handleInfluxDB();
-#endif
   }
 
 //--- if an OLED screen attached, display the status
