@@ -38,7 +38,7 @@ void epochToTimestamp(time_t t, char *ts, int8_t len)
   sprintf(ts, "%02d%02d%02d%02d%02d%02d", year(t)-2000, month(t), day(t)
                                         , hour(t), minute(t), second(t));
                                                
-  //DebugTf("epochToTimestamp() => [%s]\r\n", ts);
+  if (Verbose2) DebugTf("epochToTimestamp() => [%s]\r\n", ts);
   
 } // epochToTimestamp()
 
@@ -48,7 +48,10 @@ int8_t SecondFromTimestamp(const char *timeStamp)
   char aSS[4] = "";
   // 0123456789ab
   // YYMMDDHHmmss SS = 4-5
+  
+  if (Verbose2) DebugTf("timeStamp[%s] => ", timeStamp);
   strCopy(aSS, 4, timeStamp, 10, 11);
+  if (Verbose2) Debugf("aSe[%s], aSe[%02d]\r\n", aSS, String(aSS).toInt()); 
   return String(aSS).toInt();
     
 } // SecondFromTimestamp()
@@ -59,7 +62,9 @@ int8_t MinuteFromTimestamp(const char *timeStamp)
   char aMM[4] = "";
   // 0123456789ab
   // YYMMDDHHmmss MM = 8-9
+  if (Verbose2) DebugTf("timeStamp[%s] => ", timeStamp);
   strCopy(aMM, 4, timeStamp, 8, 9);
+  if (Verbose2) Debugf("aMi[%s], aMi[%02d]\r\n", aMM, String(aMM).toInt()); 
   return String(aMM).toInt();
     
 } // MinuteFromTimestamp()
@@ -68,9 +73,9 @@ int8_t MinuteFromTimestamp(const char *timeStamp)
 int8_t HourFromTimestamp(const char *timeStamp) 
 {
   char aHH[4] = "";
-  //DebugTf("timeStamp[%s] => \r\n", timeStamp); // YYMMDDHHmmss HH = 5-6
+  if (Verbose2) DebugTf("timeStamp[%s] => ", timeStamp); // YYMMDDHHmmss HH = 5-6
   strCopy(aHH, 4, timeStamp, 6, 7);
-  //Debugf("aHH[%s], nHH[%02d]\r\n", aHH, String(aHH).toInt()); 
+  if (Verbose2) Debugf("aHo[%s], nHo[%02d]\r\n", aHH, String(aHH).toInt()); 
   return String(aHH).toInt();
     
 } // HourFromTimestamp()
@@ -81,7 +86,9 @@ int8_t DayFromTimestamp(const char *timeStamp)
   char aDD[4] = "";
   // 0123456789ab
   // YYMMDDHHmmss DD = 4-5
+  if (Verbose2) DebugTf("timeStamp[%s] => ", timeStamp);
   strCopy(aDD, 4, timeStamp, 4, 5);
+  if (Verbose2) Debugf("aDD[%s], aDD[%02d]\r\n", aDD, String(aDD).toInt()); 
   return String(aDD).toInt();
     
 } // DayFromTimestamp()
@@ -92,7 +99,9 @@ int8_t MonthFromTimestamp(const char *timeStamp)
   char aMM[4] = "";
   // 0123456789ab
   // YYMMDDHHmmss MM = 2-3
+  if (Verbose2) DebugTf("timeStamp[%s] => ", timeStamp);
   strCopy(aMM, 4, timeStamp, 2, 3);
+  if (Verbose2) Debugf("aMM[%s], aMM[%02d]\r\n", aMM, String(aMM).toInt()); 
   return String(aMM).toInt();
     
 } // MonthFromTimestamp()
@@ -103,7 +112,10 @@ int8_t YearFromTimestamp(const char *timeStamp)
   char aYY[4] = "";
   // 0123456789ab
   // YYMMDDHHmmss YY = 0-1
+  
+  if (Verbose2) DebugTf("timeStamp[%s] => ", timeStamp);
   strCopy(aYY, 4, timeStamp, 0, 1);
+  if (Verbose2) Debugf("aYY[%s], aYY[%02d]\r\n", aYY, String(aYY).toInt()); 
   return String(aYY).toInt();
     
 } // YearFromTimestamp()
@@ -114,7 +126,10 @@ int32_t HoursKeyTimestamp(const char *timeStamp)
   char aHK[10] = "";
   // 0123456789ab
   // YYMMDDHHmmss YY = 0-1
+  
+  if (Verbose2) DebugTf("timeStamp[%s] => ", timeStamp);
   strCopy(aHK, 4, timeStamp, 0, 7);
+  if (Verbose2) Debugf("aHK[%s], aHK[%02d]\r\n", aHK, String(aHK).toInt()); 
   //return timeStamp.substring(0, 8).toInt();
   return String(aHK).toInt();
     

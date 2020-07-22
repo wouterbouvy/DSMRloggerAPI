@@ -293,6 +293,7 @@ void doRedirect(String msg, int wait, const char* URL, bool reboot)
   {
     delay(5000);
     ESP.restart();
+    yield();
     delay(5000);
   }
   

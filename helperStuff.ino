@@ -226,7 +226,7 @@ void strToLower(char *src)
 void strCopy(char *dest, int maxLen, const char *src, uint8_t frm, uint8_t to)
 {
   int d=0;
-//DebugTf("dest[%s], src[%s] max[%d], frm[%d], to[%d] =>\r\n", dest, src, maxLen, frm, to);
+  
   dest[0] = '\0';
   for (int i=0; i<=frm; i++)
   {
@@ -237,7 +237,7 @@ void strCopy(char *dest, int maxLen, const char *src, uint8_t frm, uint8_t to)
     dest[d++] = src[i];
   }
   dest[d] = '\0';
-    
+  if (Verbose2) Debugf("dest[%s] src[%s] max[%d], frm[%d], to[%d] =>", dest, src, maxLen, frm, to);
 } // strCopy()
 
 //===========================================================================================
