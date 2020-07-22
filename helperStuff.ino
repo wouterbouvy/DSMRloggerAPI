@@ -244,12 +244,12 @@ void strToLower(char *src)
 //===========================================================================================
 // a 'save' version of strncpy() that does not put a '\0' at
 // the end of dest if src >= maxLen!
-void strCopy(char *dest, int maxLen, const char *src)
-{
-  dest[0] = '\0';
-  strcat(dest, src);
+// void strCopy(char *dest, int maxLen, const char *src)
+// {
+//   dest[0] = '\0';
+//   strcat(dest, src);
     
-} // strCopy()
+// } // strCopy()
 
 
 //===========================================================================================

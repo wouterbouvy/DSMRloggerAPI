@@ -24,7 +24,7 @@ void writeSettings()
   }
   yield();
 
-  if (strlen(settingIndexPage) < 7) strCopy(settingIndexPage, (sizeof(settingIndexPage) -1), "DSMRindex.html");
+  if (strlen(settingIndexPage) < 7) strlcpy(settingIndexPage, "DSMRindex.html", (sizeof(settingIndexPage) -1));
   if (settingTelegramInterval < 2)  settingTelegramInterval = 10;
   if (settingMQTTbrokerPort < 1)    settingMQTTbrokerPort = 1883;
     
@@ -148,7 +148,7 @@ void readSettings(bool show)
   settingOledType           =  1; // 0=None, 1=SDD1306, 2=SH1106
   settingOledSleep          =  0; // infinite
   settingOledFlip           =  0; // Don't flip
-  strCopy(settingIndexPage, sizeof(settingIndexPage), "DSMRindex.html");
+  strlcpy(settingIndexPage, "DSMRindex.html", sizeof(settingIndexPage));
   settingMQTTbroker[0]     = '\0';
   settingMQTTbrokerPort    = 1883;
   settingMQTTuser[0]       = '\0';
@@ -193,7 +193,7 @@ void readSettings(bool show)
     words[0].toLowerCase();
     nColor    = words[1].substring(0,15);
 
-    if (words[0].equalsIgnoreCase("Hostname"))            strCopy(settingHostname, 29, words[1].c_str());
+    if (words[0].equalsIgnoreCase("Hostname"))            strlcpy(settingHostname, words[1].c_str(), 29);
     if (words[0].equalsIgnoreCase("EnergyDeliveredT1"))   settingEDT1         = strToFloat(words[1].c_str(), 5);  
     if (words[0].equalsIgnoreCase("EnergyDeliveredT2"))   settingEDT2         = strToFloat(words[1].c_str(), 5);
     if (words[0].equalsIgnoreCase("EnergyReturnedT1"))    settingERT1         = strToFloat(words[1].c_str(), 5);
@@ -228,23 +228,19 @@ void readSettings(bool show)
       CHANGE_INTERVAL_SEC(nextTelegram, settingTelegramInterval); 
     }
 
-    if (words[0].equalsIgnoreCase("IndexPage"))           strCopy(settingIndexPage, (sizeof(settingIndexPage) -1), words[1].c_str());  
+    if (words[0].equalsIgnoreCase("IndexPage"))           strlcpy(settingIndexPage, words[1].c_str(), (sizeof(settingIndexPage) -1));  
 
 #ifdef USE_MINDERGAS
-    if (words[0].equalsIgnoreCase("MindergasAuthtoken"))  strCopy(settingMindergasToken, 20, words[1].c_str());  
+    if (words[0].equalsIgnoreCase("MindergasAuthtoken"))  strlcpy(settingMindergasToken, words[1].c_str(), 20);  
 #endif
 
 #ifdef USE_MQTT
-    if (words[0].equalsIgnoreCase("MQTTbroker"))  
-    {
-      memset(settingMQTTbroker, '\0', sizeof(settingMQTTbroker));
-      strCopy(settingMQTTbroker, 100, words[1].c_str());
-    }
-    if (words[0].equalsIgnoreCase("MQTTbrokerPort"))      settingMQTTbrokerPort    = words[1].toInt();  
-    if (words[0].equalsIgnoreCase("MQTTuser"))            strCopy(settingMQTTuser    ,35 ,words[1].c_str());  
-    if (words[0].equalsIgnoreCase("MQTTpasswd"))          strCopy(settingMQTTpasswd  ,25, words[1].c_str());  
+    if (words[0].equalsIgnoreCase("MQTTbroker"))          strlcpy(settingMQTTbroker  , words[1].c_str(), 100);
+    if (words[0].equalsIgnoreCase("MQTTbrokerPort"))      settingMQTTbrokerPort      = words[1].toInt();  
+    if (words[0].equalsIgnoreCase("MQTTuser"))            strlcpy(settingMQTTuser    , words[1].c_str(), 35 );  
+    if (words[0].equalsIgnoreCase("MQTTpasswd"))          strlcpy(settingMQTTpasswd  , words[1].c_str(), 25 );  
     if (words[0].equalsIgnoreCase("MQTTinterval"))        settingMQTTinterval        = words[1].toInt(); 
-    if (words[0].equalsIgnoreCase("MQTTtopTopic"))        strCopy(settingMQTTtopTopic, 20, words[1].c_str());  
+    if (words[0].equalsIgnoreCase("MQTTtopTopic"))        strlcpy(settingMQTTtopTopic, words[1].c_str(), 20);  
     
     CHANGE_INTERVAL_SEC(publishMQTTtimer, settingMQTTinterval);
     CHANGE_INTERVAL_MIN(reconnectMQTTtimer, 1);
@@ -268,7 +264,7 @@ void readSettings(bool show)
   DebugTln(F(" .. done\r"));
 
 
-  if (strlen(settingIndexPage) < 7) strCopy(settingIndexPage, (sizeof(settingIndexPage) -1), "DSMRindex.html");
+  if (strlen(settingIndexPage) < 7) strlcpy(settingIndexPage, "DSMRindex.html", (sizeof(settingIndexPage) -1));
   if (settingTelegramInterval  < 2) settingTelegramInterval = 10;
   if (settingMQTTbrokerPort    < 1) settingMQTTbrokerPort   = 1883;
 
@@ -325,8 +321,8 @@ void updateSetting(const char *field, const char *newValue)
   DebugTf("-> field[%s], newValue[%s]\r\n", field, newValue);
 
   if (!strcasecmp(field, "Hostname")) {
-    strCopy(settingHostname, 29, newValue); 
-    if (strlen(settingHostname) < 1) strCopy(settingHostname, 29, _DEFAULT_HOSTNAME); 
+    strlcpy(settingHostname, newValue, sizeof(settingHostname)-1);
+    if (strlen(settingHostname) < 1) strlcpy(settingHostname, _DEFAULT_HOSTNAME, sizeof(settingHostname)-1);
     char *dotPntr = strchr(settingHostname, '.') ;
     if (dotPntr != NULL)
     {
@@ -336,36 +332,41 @@ void updateSetting(const char *field, const char *newValue)
     Debugln();
     DebugTf("Need reboot before new %s.local will be available!\r\n\n", settingHostname);
   }
-  if (!strcasecmp(field, "ed_tariff1"))        settingEDT1         = String(newValue).toFloat();  
-  if (!strcasecmp(field, "ed_tariff2"))        settingEDT2         = String(newValue).toFloat();  
-  if (!strcasecmp(field, "er_tariff1"))        settingERT1         = String(newValue).toFloat();  
-  if (!strcasecmp(field, "er_tariff2"))        settingERT2         = String(newValue).toFloat();  
-  if (!strcasecmp(field, "electr_netw_costs")) settingENBK         = String(newValue).toFloat();
+  if (!strcasecmp(field, "ed_tariff1"))        settingEDT1         = atof(newValue);  
+  if (!strcasecmp(field, "ed_tariff2"))        settingEDT2         = atof(newValue);  
+  if (!strcasecmp(field, "er_tariff1"))        settingERT1         = atof(newValue);
+;  
+  if (!strcasecmp(field, "er_tariff2"))        settingERT2         = atof(newValue);
+;  
+  if (!strcasecmp(field, "electr_netw_costs")) settingENBK         = atof(newValue);
+;
 
-  if (!strcasecmp(field, "gd_tariff"))         settingGDT          = String(newValue).toFloat();  
-  if (!strcasecmp(field, "gas_netw_costs"))    settingGNBK         = String(newValue).toFloat();
+  if (!strcasecmp(field, "gd_tariff"))         settingGDT          = atof(newValue);
+;  
+  if (!strcasecmp(field, "gas_netw_costs"))    settingGNBK         = atof(newValue);
+;
 
   if (!strcasecmp(field, "sm_has_fase_info")) 
   {
-    settingSmHasFaseInfo = String(newValue).toInt(); 
+    settingSmHasFaseInfo = atoi(newValue); 
     if (settingSmHasFaseInfo != 0)  settingSmHasFaseInfo = 1;
     else                            settingSmHasFaseInfo = 0;  
   }
 
   if (!strcasecmp(field, "oled_type"))
   {
-    settingOledType     = String(newValue).toInt();  
+    settingOledType     = atoi(newValue);  
     if (settingOledType > 2)  settingOledType = 1;
     oled_Init();
   }
   if (!strcasecmp(field, "oled_screen_time")) 
   {
-    settingOledSleep    = String(newValue).toInt();  
+    settingOledSleep    = atoi(newValue);  
     CHANGE_INTERVAL_MIN(oledSleepTimer, settingOledSleep)
   }
   if (!strcasecmp(field, "oled_flip_screen"))
   {
-    settingOledFlip     = String(newValue).toInt();  
+    settingOledFlip     = atoi(newValue);  
     if (settingOledFlip != 0) settingOledFlip = 1;
     else                      settingOledFlip = 0;
     oled_Init();
@@ -373,45 +374,43 @@ void updateSetting(const char *field, const char *newValue)
   
   if (!strcasecmp(field, "tlgrm_interval"))    
   {
-    settingTelegramInterval     = String(newValue).toInt();  
+    settingTelegramInterval     = atoi(newValue);  
     CHANGE_INTERVAL_SEC(nextTelegram, settingTelegramInterval)
   }
 
-  if (!strcasecmp(field, "index_page"))        strCopy(settingIndexPage, (sizeof(settingIndexPage) -1), newValue);  
+  if (!strcasecmp(field, "index_page"))        strlcpy(settingIndexPage, newValue, sizeof(settingIndexPage));  
 
 #ifdef USE_MINDERGAS
-  if (!strcasecmp(field, "MindergasToken"))    strCopy(settingMindergasToken, 20, newValue);  
+  if (!strcasecmp(field, "MindergasToken"))    strlcpy(settingMindergasToken, newValue, sizeof(settingMindergasToken));  
 #endif //USE_MINDERGAS
 
 #ifdef USE_MQTT
-  if (!strcasecmp(field, "mqtt_broker"))  {
-    DebugT("settingMQTTbroker! to : ");
-    memset(settingMQTTbroker, '\0', sizeof(settingMQTTbroker));
-    strCopy(settingMQTTbroker, 100, newValue);
-    Debugf("[%s]\r\n", settingMQTTbroker);
+  if (!strcasecmp(field, "mqtt_broker"))        
+   {
+    strlcpy(settingMQTTbroker, newValue, sizeof(settingMQTTbroker));   
+    DebugTf("settingMQTTbroker to : [%s]\r\n", settingMQTTbroker);
     mqttIsConnected = false;
-    CHANGE_INTERVAL_MS(reconnectMQTTtimer, 100); // try reconnecting cyclus timer
   }
   if (!strcasecmp(field, "mqtt_broker_port")) {
-    settingMQTTbrokerPort = String(newValue).toInt();  
+    settingMQTTbrokerPort = atoi(newValue);  
     mqttIsConnected = false;
     CHANGE_INTERVAL_MS(reconnectMQTTtimer, 100); // try reconnecting cyclus timer
   }
   if (!strcasecmp(field, "mqtt_user")) {
-    strCopy(settingMQTTuser    ,35, newValue);  
+    strlcpy(settingMQTTuser, newValue, sizeof(settingMQTTuser));   
     mqttIsConnected = false;
     CHANGE_INTERVAL_MS(reconnectMQTTtimer, 100); // try reconnecting cyclus timer
   }
   if (!strcasecmp(field, "mqtt_passwd")) {
-    strCopy(settingMQTTpasswd  ,25, newValue);  
+    strlcpy(settingMQTTpasswd, newValue, sizeof(settingMQTTpasswd)); 
     mqttIsConnected = false;
     CHANGE_INTERVAL_MS(reconnectMQTTtimer, 100); // try reconnecting cyclus timer
   }
   if (!strcasecmp(field, "mqtt_interval")) {
-    settingMQTTinterval   = String(newValue).toInt();  
+    settingMQTTinterval   = atoi(newValue);  
     CHANGE_INTERVAL_SEC(publishMQTTtimer, settingMQTTinterval);
   }
-  if (!strcasecmp(field, "mqtt_toptopic"))     strCopy(settingMQTTtopTopic, 20, newValue);  
+  if (!strcasecmp(field, "mqtt_toptopic"))  strlcpy(settingMQTTtopTopic, newValue, sizeof(settingMQTTtopTopic));
 #endif
 
 #ifdef USE_INFLUXDB
@@ -420,7 +419,7 @@ void updateSetting(const char *field, const char *newValue)
     initInfluxDB();
   }
   if (!strcasecmp(field, "influxdb_port")) {
-    settingInfluxDBport = String(newValue).toInt();
+    settingInfluxDBport = atoi(newValue);
     initInfluxDB();
   }
   if (!strcasecmp(field, "influxdb_databasename")) {

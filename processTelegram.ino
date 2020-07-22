@@ -27,7 +27,7 @@ void processTelegram()
     oled_Print_Msg(2, cMsg, 0);
   }
                                                     
-  strcpy(newTimestamp, DSMRdata.timestamp.c_str()); 
+  strncpy(newTimestamp, DSMRdata.timestamp.c_str(), sizeof(newTimestamp)); 
   //--- newTimestamp is the timestamp from the last telegram
   newT = epoch(newTimestamp, strlen(newTimestamp), true); // update system time
   //--- actTimestamp is the timestamp from the previous telegram
@@ -36,7 +36,7 @@ void processTelegram()
   //--- Skip first 3 telegrams .. just to settle down a bit ;-)
   if ((int32_t)(telegramCount - telegramErrors) < 3) 
   {
-    strCopy(actTimestamp, sizeof(actTimestamp), newTimestamp);
+    strlcpy(actTimestamp, newTimestamp, sizeof(actTimestamp));
     actT = epoch(actTimestamp, strlen(actTimestamp), false);   // update system time
     return;
   }
@@ -65,14 +65,14 @@ void processTelegram()
     {
       //--- YES! actTimestamp := newTimestamp
       //--- and update the files with the actTimestamp
-      strCopy(actTimestamp, sizeof(actTimestamp), newTimestamp);
+      strlcpy(actTimestamp, newTimestamp, sizeof(actTimestamp));
       writeDataToFiles();
     }
     else  //--- NO, only the hour has changed
     {
       char      record[DATA_RECLEN + 1] = "";
       //--- actTimestamp := newTimestamp
-      strCopy(actTimestamp, sizeof(actTimestamp), newTimestamp);
+      strlcpy(actTimestamp, newTimestamp, sizeof(actTimestamp));
       buildDataRecordFromSM(record);
       uint16_t recSlot = timestampToHourSlot(actTimestamp, strlen(actTimestamp));
       //--- and update the files with the actTimestamp
@@ -81,7 +81,7 @@ void processTelegram()
     }
   }
 
-  strCopy(actTimestamp, sizeof(actTimestamp), newTimestamp);
+  strlcpy(actTimestamp, newTimestamp, sizeof(actTimestamp));
   actT = epoch(actTimestamp, strlen(actTimestamp), true);   // update system time
 
 // If the MQTT timer is DUE, also send MQTT message

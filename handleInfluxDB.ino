@@ -106,7 +106,7 @@ void handleInfluxDB()
     lastTelegram = telegramCount;
     //Setup the timestamp for this telegram, so all points for this batch are the same.
     thisEpoch = UTC.now();  
-    DebugTf("Writing telegram to influxddb - Epoc = %d (this) %d (NL) %d (UTC) \r\n", (int)thisEpoch, (int)localTZ.now(), (int)UTC.now());
+    DebugTf("Writing telegram to influxdb - Epoc = %d (this) %d (NL) %d (UTC) \r\n", (int)thisEpoch, (int)localTZ.now(), (int)UTC.now());
     uint32_t timeThis = millis();
     DSMRdata.applyEach(writeInfluxDataPoints());
     // Check whether buffer in not empty

@@ -216,7 +216,7 @@ void setup()
   }
 
 //------ read status file for last Timestamp --------------------
-  strcpy(actTimestamp, "040302010101X");
+  strncpy(actTimestamp, "040302010101X", sizeof(actTimestamp));
   //==========================================================//
   // writeLastStatus();  // only for firsttime initialization //
   //==========================================================//
@@ -326,7 +326,7 @@ void setup()
       {
         char tempPage[50] = "/";
         strConcat(tempPage, 49, settingIndexPage);
-        strCopy(settingIndexPage, sizeof(settingIndexPage), tempPage);
+        strlcpy(settingIndexPage, tempPage, sizeof(settingIndexPage));
       }
       hasAlternativeIndex        = true;
     }

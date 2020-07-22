@@ -39,7 +39,7 @@ void readLastStatus()
   }
   _file.close();
   if (strlen(spiffsTimestamp) != 13) {
-    strcpy(spiffsTimestamp, "010101010101X");
+    strncpy(spiffsTimestamp, "010101010101X", sizeof(spiffsTimestamp));
   }
   snprintf(actTimestamp, sizeof(actTimestamp), "%s", spiffsTimestamp);
   
@@ -81,9 +81,8 @@ bool buildDataRecordFromSM(char *recIn)
   char key[10] = "";
  
   uint16_t recSlot = timestampToHourSlot(actTimestamp, strlen(actTimestamp));
-  strncpy(key, actTimestamp+0,  9);
-  //strCopy(key, 10, actTimestamp, 0, 8);
-
+  strlcpy(key, actTimestamp+0,  9);
+ 
   snprintf(record, sizeof(record), (char*)DATA_FORMAT, key , (float)DSMRdata.energy_delivered_tariff1
                                           , (float)DSMRdata.energy_delivered_tariff2
                                           , (float)DSMRdata.energy_returned_tariff1
@@ -96,7 +95,7 @@ bool buildDataRecordFromSM(char *recIn)
   // DATA + \n + \0                                        
   fillRecord(record, DATA_RECLEN);
 
-  strcpy(recIn, record);
+  strncpy(recIn, record, sizeof(recIn));
 
 } // buildDataRecordFromSM()
 
@@ -125,7 +124,7 @@ uint16_t buildDataRecordFromJson(char *recIn, String jsonIn)
   {
     splitString(wOut[f].c_str(), ':', wPair, 4);
     if (Verbose2) DebugTf("[%d] -> [%s]\r\n", f, wOut[f].c_str());
-    if (wPair[0].indexOf("recid") == 0)  strCopy(uKey, 10, wPair[1].c_str());
+    if (wPair[0].indexOf("recid") == 0)  strlcpy(uKey, wPair[1].c_str(), 10);
     if (wPair[0].indexOf("edt1")  == 0)  uEDT1 = wPair[1].toFloat();
     if (wPair[0].indexOf("edt2")  == 0)  uEDT2 = wPair[1].toFloat();
     if (wPair[0].indexOf("ert1")  == 0)  uERT1 = wPair[1].toFloat();
@@ -145,7 +144,7 @@ uint16_t buildDataRecordFromJson(char *recIn, String jsonIn)
   // DATA + \n + \0                                        
   fillRecord(record, DATA_RECLEN);
 
-  strcpy(recIn, record);
+  strncpy(recIn, record, sizeof(recIn));
 
   return recSlot;
 
