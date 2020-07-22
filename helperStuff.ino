@@ -211,15 +211,15 @@ void strConcat(char *dest, int maxLen, int32_t v)
 
 
 //===========================================================================================
-void strToLower(char *src)
-{
-  for (int i = 0; i < strlen(src); i++)
-  {
-    if (src[i] == '\0') return;
-    if (src[i] >= 'A' && src[i] <= 'Z')
-        src[i] += 32;
-  }
-} // strToLower()
+// void strToLower(char *src)
+// {
+//   for (int i = 0; i < strlen(src); i++)
+//   {
+//     if (src[i] == '\0') return;
+//     if (src[i] >= 'A' && src[i] <= 'Z')
+//         src[i] += 32;
+//   }
+// } // strToLower()
 
 //===========================================================================================
 // a 'save' string copy
