@@ -1,14 +1,13 @@
 # DSMRlogger-Next
 The Next firmware for the DSMR-logger
 
-
-**This is the FORK of the original DSMRlogger from Willem Aandewiel.** 
+**This is the FORK of the original DSMRloggerAPI from Willem Aandewiel.** 
 
 The intent of this for is to start implementing and extend with new features, fixing bugs and trying to improve the codebase.
 
 With the launch of the Final version of DSMRloggerAPI, version 2.0.1. This completed the last and final update of Willem and released it to the public DSMRlogger, as it complete the REST API.This fork is picking up where Willem finished the development of the REST finished, by fixing bugs, improvement to the codebas and starting to add new features to the firmware.
 
-Willem contributed a large part of his time and effort in creating the open hardware design, an easy of getting a PCB and components and the firmware in an Open Source way. I plan to extend building features I care about, try to fix bugs and improve code (if even possible). I thank Willem for his contribution to the community and I will keep posting the work as a fork from his original code base. 
+Willem contributed a large part of his time and effort in creating the open hardware design, making it easy ot get a PCB and components and the firmware in an Open Source way. I plan to extend building features I care about, try to fix bugs and improve code (if even possible). I thank Willem for his contribution to the community and I will keep posting the work as a fork from his original code base. 
 
 The first release candidate of DSMRlogger-Next will contain:
 - Direct writting to InfluxDB;
@@ -22,7 +21,7 @@ The original code and release of DSMRloggerAPI can be found here:
 [here](https://willem.aandewiel.nl/index.php/2020/02/28/restapis-zijn-hip-nieuwe-firmware-voor-de-dsmr-logger/)
 you can find information about this project.
 
-Documentation of DSMRloggerAPIcan be found [here](https://mrwheel-docs.gitbook.io/dsmrloggerapi/) (work in progress)!
+Documentation of DSMRloggerAPI can be found [here](https://mrwheel-docs.gitbook.io/dsmrloggerapi/) (work in progress)!
 
 <table>
 <tr><th>Versie</th><th>Opmerking</th></tr>
