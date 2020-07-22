@@ -81,7 +81,8 @@ bool buildDataRecordFromSM(char *recIn)
   char key[10] = "";
  
   uint16_t recSlot = timestampToHourSlot(actTimestamp, strlen(actTimestamp));
-  strCopy(key, 10, actTimestamp, 0, 8);
+  strncpy(key, actTimestamp+0,  9);
+  //strCopy(key, 10, actTimestamp, 0, 8);
 
   snprintf(record, sizeof(record), (char*)DATA_FORMAT, key , (float)DSMRdata.energy_delivered_tariff1
                                           , (float)DSMRdata.energy_delivered_tariff2

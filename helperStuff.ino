@@ -223,22 +223,23 @@ void strToLower(char *src)
 
 //===========================================================================================
 // a 'save' string copy
-void strCopy(char *dest, int maxLen, const char *src, uint8_t frm, uint8_t to)
-{
-  int d=0;
+// void strCopy(char *dest, int maxLen, const char *src, uint8_t frm, uint8_t to)
+// {
+//   // int d=0;
   
-  dest[0] = '\0';
-  for (int i=0; i<=frm; i++)
-  {
-    if (src[i] == 0) return;
-  }
-  for (int i=frm; (src[i] != 0  && i<=to && d<maxLen); i++)
-  {
-    dest[d++] = src[i];
-  }
-  dest[d] = '\0';
-  if (Verbose2) Debugf("dest[%s] src[%s] max[%d], frm[%d], to[%d] =>", dest, src, maxLen, frm, to);
-} // strCopy()
+//   // dest[0] = '\0';
+//   // for (int i=0; i<=frm; i++)
+//   // {
+//   //   if (src[i] == 0) return;
+//   // }
+//   // for (int i=frm; (src[i] != 0  && i<=to && d<maxLen); i++)
+//   // {
+//   //   dest[d++] = src[i];
+//   // }
+//   // dest[d] = '\0';
+//   strncpy(dest, src+frm,  (to-frm)+1);
+//   if (Verbose2) Debugf("dest[%s] src[%s] max[%d], frm[%d], to[%d] =>", dest, src, maxLen, frm, to);
+// } // strCopy()
 
 //===========================================================================================
 // a 'save' version of strncpy() that does not put a '\0' at
@@ -252,15 +253,15 @@ void strCopy(char *dest, int maxLen, const char *src)
 
 
 //===========================================================================================
-int stricmp(const char *a, const char *b)
-{
-    for (;; a++, b++) {
-        int d = tolower((unsigned char)*a) - tolower((unsigned char)*b);
-        if (d != 0 || !*a)
-            return d;
-    }
+// int stricmp(const char *a, const char *b)
+// {
+//     for (;; a++, b++) {
+//         int d = tolower((unsigned char)*a) - tolower((unsigned char)*b);
+//         if (d != 0 || !*a)
+//             return d;
+//     }
     
-} // stricmp()
+// } // stricmp()
 
 //===========================================================================================
 char *intToStr(int32_t v)
