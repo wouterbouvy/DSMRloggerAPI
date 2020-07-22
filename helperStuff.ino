@@ -263,38 +263,38 @@ void strConcat(char *dest, int maxLen, int32_t v)
     
 // } // stricmp()
 
-//===========================================================================================
-char *intToStr(int32_t v)
-{
-  static char buff[25];
-  sprintf(buff,"%d", v);
-  return buff;
+// //===========================================================================================
+// char *intToStr(int32_t v)
+// {
+//   static char buff[25];
+//   sprintf(buff,"%d", v);
+//   return buff;
   
-} // intToStr()
+// } // intToStr()
 
-//===========================================================================================
-char *floatToStr(float v, int dec)
-{
-  static char buff[25];
-  if (dec == 0)       sprintf(buff,"%.0f", v);
-  else if (dec == 1)  sprintf(buff,"%.1f", v);
-  else if (dec == 2)  sprintf(buff,"%.2f", v);
-  else if (dec == 3)  sprintf(buff,"%.3f", v);
-  else if (dec == 4)  sprintf(buff,"%.4f", v);
-  else if (dec == 5)  sprintf(buff,"%.5f", v);
-  else                sprintf(buff,"%f",   v);
-  return buff;
+// //===========================================================================================
+// char *floatToStr(float v, int dec)
+// {
+//   static char buff[25];
+//   if (dec == 0)       sprintf(buff,"%.0f", v);
+//   else if (dec == 1)  sprintf(buff,"%.1f", v);
+//   else if (dec == 2)  sprintf(buff,"%.2f", v);
+//   else if (dec == 3)  sprintf(buff,"%.3f", v);
+//   else if (dec == 4)  sprintf(buff,"%.4f", v);
+//   else if (dec == 5)  sprintf(buff,"%.5f", v);
+//   else                sprintf(buff,"%f",   v);
+//   return buff;
   
-} // floattToStr()
+// } // floattToStr()
 
-//===========================================================================================
+// //===========================================================================================
 float formatFloat(float v, int dec)
 {
   return (String(v, dec).toFloat());
 
 } //  formatFloat()
 
-//===========================================================================================
+// //===========================================================================================
 float strToFloat(const char *s, int dec)
 {
   float r =  0.0;
