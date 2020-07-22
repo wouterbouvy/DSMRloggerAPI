@@ -324,7 +324,7 @@ void updateSetting(const char *field, const char *newValue)
 {
   DebugTf("-> field[%s], newValue[%s]\r\n", field, newValue);
 
-  if (!stricmp(field, "Hostname")) {
+  if (!strcasecmp(field, "Hostname")) {
     strCopy(settingHostname, 29, newValue); 
     if (strlen(settingHostname) < 1) strCopy(settingHostname, 29, _DEFAULT_HOSTNAME); 
     char *dotPntr = strchr(settingHostname, '.') ;
@@ -336,34 +336,34 @@ void updateSetting(const char *field, const char *newValue)
     Debugln();
     DebugTf("Need reboot before new %s.local will be available!\r\n\n", settingHostname);
   }
-  if (!stricmp(field, "ed_tariff1"))        settingEDT1         = String(newValue).toFloat();  
-  if (!stricmp(field, "ed_tariff2"))        settingEDT2         = String(newValue).toFloat();  
-  if (!stricmp(field, "er_tariff1"))        settingERT1         = String(newValue).toFloat();  
-  if (!stricmp(field, "er_tariff2"))        settingERT2         = String(newValue).toFloat();  
-  if (!stricmp(field, "electr_netw_costs")) settingENBK         = String(newValue).toFloat();
+  if (!strcasecmp(field, "ed_tariff1"))        settingEDT1         = String(newValue).toFloat();  
+  if (!strcasecmp(field, "ed_tariff2"))        settingEDT2         = String(newValue).toFloat();  
+  if (!strcasecmp(field, "er_tariff1"))        settingERT1         = String(newValue).toFloat();  
+  if (!strcasecmp(field, "er_tariff2"))        settingERT2         = String(newValue).toFloat();  
+  if (!strcasecmp(field, "electr_netw_costs")) settingENBK         = String(newValue).toFloat();
 
-  if (!stricmp(field, "gd_tariff"))         settingGDT          = String(newValue).toFloat();  
-  if (!stricmp(field, "gas_netw_costs"))    settingGNBK         = String(newValue).toFloat();
+  if (!strcasecmp(field, "gd_tariff"))         settingGDT          = String(newValue).toFloat();  
+  if (!strcasecmp(field, "gas_netw_costs"))    settingGNBK         = String(newValue).toFloat();
 
-  if (!stricmp(field, "sm_has_fase_info")) 
+  if (!strcasecmp(field, "sm_has_fase_info")) 
   {
     settingSmHasFaseInfo = String(newValue).toInt(); 
     if (settingSmHasFaseInfo != 0)  settingSmHasFaseInfo = 1;
     else                            settingSmHasFaseInfo = 0;  
   }
 
-  if (!stricmp(field, "oled_type"))
+  if (!strcasecmp(field, "oled_type"))
   {
     settingOledType     = String(newValue).toInt();  
     if (settingOledType > 2)  settingOledType = 1;
     oled_Init();
   }
-  if (!stricmp(field, "oled_screen_time")) 
+  if (!strcasecmp(field, "oled_screen_time")) 
   {
     settingOledSleep    = String(newValue).toInt();  
     CHANGE_INTERVAL_MIN(oledSleepTimer, settingOledSleep)
   }
-  if (!stricmp(field, "oled_flip_screen"))
+  if (!strcasecmp(field, "oled_flip_screen"))
   {
     settingOledFlip     = String(newValue).toInt();  
     if (settingOledFlip != 0) settingOledFlip = 1;
@@ -371,20 +371,20 @@ void updateSetting(const char *field, const char *newValue)
     oled_Init();
   }
   
-  if (!stricmp(field, "tlgrm_interval"))    
+  if (!strcasecmp(field, "tlgrm_interval"))    
   {
     settingTelegramInterval     = String(newValue).toInt();  
     CHANGE_INTERVAL_SEC(nextTelegram, settingTelegramInterval)
   }
 
-  if (!stricmp(field, "index_page"))        strCopy(settingIndexPage, (sizeof(settingIndexPage) -1), newValue);  
+  if (!strcasecmp(field, "index_page"))        strCopy(settingIndexPage, (sizeof(settingIndexPage) -1), newValue);  
 
 #ifdef USE_MINDERGAS
-  if (!stricmp(field, "MindergasToken"))    strCopy(settingMindergasToken, 20, newValue);  
+  if (!strcasecmp(field, "MindergasToken"))    strCopy(settingMindergasToken, 20, newValue);  
 #endif //USE_MINDERGAS
 
 #ifdef USE_MQTT
-  if (!stricmp(field, "mqtt_broker"))  {
+  if (!strcasecmp(field, "mqtt_broker"))  {
     DebugT("settingMQTTbroker! to : ");
     memset(settingMQTTbroker, '\0', sizeof(settingMQTTbroker));
     strCopy(settingMQTTbroker, 100, newValue);
@@ -392,38 +392,38 @@ void updateSetting(const char *field, const char *newValue)
     mqttIsConnected = false;
     CHANGE_INTERVAL_MS(reconnectMQTTtimer, 100); // try reconnecting cyclus timer
   }
-  if (!stricmp(field, "mqtt_broker_port")) {
+  if (!strcasecmp(field, "mqtt_broker_port")) {
     settingMQTTbrokerPort = String(newValue).toInt();  
     mqttIsConnected = false;
     CHANGE_INTERVAL_MS(reconnectMQTTtimer, 100); // try reconnecting cyclus timer
   }
-  if (!stricmp(field, "mqtt_user")) {
+  if (!strcasecmp(field, "mqtt_user")) {
     strCopy(settingMQTTuser    ,35, newValue);  
     mqttIsConnected = false;
     CHANGE_INTERVAL_MS(reconnectMQTTtimer, 100); // try reconnecting cyclus timer
   }
-  if (!stricmp(field, "mqtt_passwd")) {
+  if (!strcasecmp(field, "mqtt_passwd")) {
     strCopy(settingMQTTpasswd  ,25, newValue);  
     mqttIsConnected = false;
     CHANGE_INTERVAL_MS(reconnectMQTTtimer, 100); // try reconnecting cyclus timer
   }
-  if (!stricmp(field, "mqtt_interval")) {
+  if (!strcasecmp(field, "mqtt_interval")) {
     settingMQTTinterval   = String(newValue).toInt();  
     CHANGE_INTERVAL_SEC(publishMQTTtimer, settingMQTTinterval);
   }
-  if (!stricmp(field, "mqtt_toptopic"))     strCopy(settingMQTTtopTopic, 20, newValue);  
+  if (!strcasecmp(field, "mqtt_toptopic"))     strCopy(settingMQTTtopTopic, 20, newValue);  
 #endif
 
 #ifdef USE_INFLUXDB
-  if (!stricmp(field, "influxdb_hostname")) {
+  if (!strcasecmp(field, "influxdb_hostname")) {
     strlcpy(settingInfluxDBhostname, newValue, sizeof(settingInfluxDBhostname));
     initInfluxDB();
   }
-  if (!stricmp(field, "influxdb_port")) {
+  if (!strcasecmp(field, "influxdb_port")) {
     settingInfluxDBport = String(newValue).toInt();
     initInfluxDB();
   }
-  if (!stricmp(field, "influxdb_databasename")) {
+  if (!strcasecmp(field, "influxdb_databasename")) {
     strlcpy(settingInfluxDBdatabasename, newValue, sizeof(settingInfluxDBdatabasename));
     initInfluxDB();
   }
