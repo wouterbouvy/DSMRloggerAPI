@@ -106,7 +106,7 @@ void APIlistFiles()             // Senden aller Daten an den Client
     yield();
     for (int8_t x = y + 1; x < fileNr; x++)  {
       //DebugTf("y[%d], x[%d] => seq[y][%s] / seq[x][%s] ", y, x, dirMap[y].Name, dirMap[x].Name);
-      if (strcmp(dirMap[x].Name, dirMap[y].Name) <= 0)
+      if (strcasecmp(dirMap[x].Name, dirMap[y].Name) <= 0)
       {
         //Debug(" !switch!");
         fileMeta temp = dirMap[y];
