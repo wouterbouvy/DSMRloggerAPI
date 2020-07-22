@@ -517,7 +517,7 @@ void listSPIFFS()
     yield();
     for (int8_t x = y + 1; x < fileNr; x++)  {
       //DebugTf("y[%d], x[%d] => seq[x][%s] ", y, x, dirMap[x].Name);
-      if (compare(String(dirMap[x].Name), String(dirMap[y].Name)))  
+      if (strcmp(dirMap[x].Name, dirMap[y].Name) <= 0) 
       {
         fileMeta temp = dirMap[y];
         dirMap[y]     = dirMap[x];
