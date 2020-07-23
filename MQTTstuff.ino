@@ -14,7 +14,7 @@
 // Declare some variables within global scope
 
   static IPAddress  MQTTbrokerIP;
-  static char       MQTTbrokerIPchar[20];
+  static char       MQTTbrokerIPchar[20] {0};
 
 #ifdef USE_MQTT
 //  #include <PubSubClient.h>           // MQTT client publish and subscribe functionality
@@ -22,13 +22,13 @@
 //  static PubSubClient MQTTclient(wifiClient);
   int8_t              reconnectAttempts = 0;
   char                lastMQTTtimestamp[15] = "-";
-  char                mqttBuff[100];
+  char                mqttBuff[100] {0};
 
 
   enum states_of_MQTT { MQTT_STATE_INIT, MQTT_STATE_TRY_TO_CONNECT, MQTT_STATE_IS_CONNECTED, MQTT_STATE_ERROR };
   enum states_of_MQTT stateMQTT = MQTT_STATE_INIT;
 
-  String            MQTTclientId;
+  char                MQTTclientId[80] {0}; //hostname + mac 
 
 #endif
 
@@ -92,7 +92,10 @@ bool connectMQTT_FSM()
           DebugTf("[%s] => setServer(%s, %d) \r\n", settingMQTTbroker, MQTTbrokerIPchar, settingMQTTbrokerPort);
           MQTTclient.setServer(MQTTbrokerIPchar, settingMQTTbrokerPort);
           DebugTf("setServer  -> MQTT status, rc=%d \r\n", MQTTclient.state());
-          MQTTclientId  = String(settingHostname) + "-" + WiFi.macAddress();
+          strlcpy(MQTTclientId, settingHostname, sizeof(MQTTclientId));
+          strlcat(MQTTclientId, "-", sizeof(MQTTclientId));
+          strlcat(MQTTclientId, WiFi.macAddress().c_str(), sizeof(MQTTclientId));
+          //MQTTclientId  = String(settingHostname) + "-" + WiFi.macAddress();
           stateMQTT = MQTT_STATE_TRY_TO_CONNECT;
           DebugTln(F("Next State: MQTT_STATE_TRY_TO_CONNECT"));
           reconnectAttempts = 0;
@@ -101,19 +104,19 @@ bool connectMQTT_FSM()
           DebugTln(F("MQTT State: MQTT try to connect"));
           DebugTf("MQTT server is [%s], IP[%s]\r\n", settingMQTTbroker, MQTTbrokerIPchar);
       
-          DebugTf("Attempting MQTT connection as [%s] .. \r\n", MQTTclientId.c_str());
+          DebugTf("Attempting MQTT connection as [%s] .. \r\n", MQTTclientId);
           reconnectAttempts++;
 
           //--- If no username, then anonymous connection to broker, otherwise assume username/password.
-          if (String(settingMQTTuser).length() == 0) 
+          if (strlen(settingMQTTuser) == 0) 
           {
             DebugT(F("without a Username/Password "));
-            MQTTclient.connect(MQTTclientId.c_str());
+            MQTTclient.connect(MQTTclientId);
           } 
           else 
           {
             DebugTf("with Username [%s] and password ", settingMQTTuser);
-            MQTTclient.connect(MQTTclientId.c_str(), settingMQTTuser, settingMQTTpasswd);
+            MQTTclient.connect(MQTTclientId, settingMQTTuser, settingMQTTpasswd);
           }
           //--- If connection was made succesful, move on to next state...
           if (MQTTclient.connected())
@@ -158,14 +161,6 @@ bool connectMQTT_FSM()
   return false;  
 
 } // connectMQTT_FSM()
-
-//===========================================================================================
-String trimVal(char *in) 
-{
-  String Out = in;
-  Out.trim();
-  return Out;
-} // trimVal()
 
 
 //=======================================================================
