@@ -53,16 +53,16 @@ void initInfluxDB()
   // Only needed when query's are done?
   //client.setConnectionParamsV1(INFLUXDB_URL, INFLUXDB_DB_NAME, INFLUXDB_USER, INFLUXDB_PASSWORD);   
   snprintf(cMsg, sizeof(cMsg), "http://%s:%d", settingInfluxDBhostname , settingInfluxDBport);
-  DebugTf("InfluxDB Connection Setup: [%s] - database: [%s]", cMsg , settingInfluxDBdatabasename);
+  DebugTf("InfluxDB Connection Setup: [%s] - database: [%s]\r\n", cMsg , settingInfluxDBdatabasename);
   client.setConnectionParamsV1(cMsg, settingInfluxDBdatabasename);
   // Connect to influxdb server connection
 
   if (client.validateConnection()) {
-    Serial.print("Connected to InfluxDB: ");
-    Serial.println(client.getServerUrl());
+    DebugT("Connected to InfluxDB: ");
+    Debugln(client.getServerUrl());
   } else {
-    Serial.print("InfluxDB connection failed: ");
-    Serial.println(client.getLastErrorMessage());
+    DebugT("InfluxDB connection failed: ");
+    Debugln(client.getLastErrorMessage());
   }
     
   //Enable messages batching and retry buffer

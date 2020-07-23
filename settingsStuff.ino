@@ -228,19 +228,19 @@ void readSettings(bool show)
       CHANGE_INTERVAL_SEC(nextTelegram, settingTelegramInterval); 
     }
 
-    if (words[0].equalsIgnoreCase("IndexPage"))           strlcpy(settingIndexPage, words[1].c_str(), (sizeof(settingIndexPage) -1));  
+    if (words[0].equalsIgnoreCase("IndexPage"))           strlcpy(settingIndexPage, words[1].c_str(), sizeof(settingIndexPage));  
 
 #ifdef USE_MINDERGAS
-    if (words[0].equalsIgnoreCase("MindergasAuthtoken"))  strlcpy(settingMindergasToken, words[1].c_str(), 20);  
+    if (words[0].equalsIgnoreCase("MindergasAuthtoken"))  strlcpy(settingMindergasToken, words[1].c_str(), sizeof(settingMindergasToken));  
 #endif
 
 #ifdef USE_MQTT
-    if (words[0].equalsIgnoreCase("MQTTbroker"))          strlcpy(settingMQTTbroker  , words[1].c_str(), 100);
+    if (words[0].equalsIgnoreCase("MQTTbroker"))          strlcpy(settingMQTTbroker  , words[1].c_str(), sizeof(settingMQTTbroker));
     if (words[0].equalsIgnoreCase("MQTTbrokerPort"))      settingMQTTbrokerPort      = words[1].toInt();  
-    if (words[0].equalsIgnoreCase("MQTTuser"))            strlcpy(settingMQTTuser    , words[1].c_str(), 35 );  
-    if (words[0].equalsIgnoreCase("MQTTpasswd"))          strlcpy(settingMQTTpasswd  , words[1].c_str(), 25 );  
+    if (words[0].equalsIgnoreCase("MQTTuser"))            strlcpy(settingMQTTuser    , words[1].c_str(), sizeof(settingMQTTuser) );  
+    if (words[0].equalsIgnoreCase("MQTTpasswd"))          strlcpy(settingMQTTpasswd  , words[1].c_str(), sizeof(settingMQTTpasswd) );  
     if (words[0].equalsIgnoreCase("MQTTinterval"))        settingMQTTinterval        = words[1].toInt(); 
-    if (words[0].equalsIgnoreCase("MQTTtopTopic"))        strlcpy(settingMQTTtopTopic, words[1].c_str(), 20);  
+    if (words[0].equalsIgnoreCase("MQTTtopTopic"))        strlcpy(settingMQTTtopTopic, words[1].c_str(), sizeof(settingMQTTtopTopic));  
     
     CHANGE_INTERVAL_SEC(publishMQTTtimer, settingMQTTinterval);
     CHANGE_INTERVAL_MIN(reconnectMQTTtimer, 1);
@@ -264,7 +264,7 @@ void readSettings(bool show)
   DebugTln(F(" .. done\r"));
 
 
-  if (strlen(settingIndexPage) < 7) strlcpy(settingIndexPage, "DSMRindex.html", (sizeof(settingIndexPage) -1));
+  if (strlen(settingIndexPage) < 7) strlcpy(settingIndexPage, "DSMRindex.html", sizeof(settingIndexPage));
   if (settingTelegramInterval  < 2) settingTelegramInterval = 10;
   if (settingMQTTbrokerPort    < 1) settingMQTTbrokerPort   = 1883;
 

@@ -40,9 +40,10 @@ void processAPI()
 {
   char fName[40] = "";
   char URI[50]   = "";
-  String words[10];
+ // String words[10];
+ char words[10][10];
 
-  strncpy( URI, httpServer.uri().c_str(), sizeof(URI) );
+  strlcpy( URI, httpServer.uri().c_str(), sizeof(URI) );
 
   if (httpServer.method() == HTTP_GET)
         DebugTf("from[%s] URI[%s] method[GET] \r\n"
@@ -68,6 +69,7 @@ void processAPI()
   }
 
   int8_t wc = splitString(URI, '/', words, 10);
+  //int8_t wc = hierwasik_splitCharS(URI, '/', words, 10);
   
   if (Verbose2) 
   {
@@ -460,7 +462,7 @@ void sendDeviceSettings()
 
   sendStartJsonObj("settings");
   
-  sendJsonSettingObj("hostname",          settingHostname,        "s", sizeof(settingHostname) -1);
+  sendJsonSettingObj("hostname",          settingHostname,        "s", sizeof(settingHostname) );
   sendJsonSettingObj("ed_tariff1",        settingEDT1,            "f", 0, 10,  5);
   sendJsonSettingObj("ed_tariff2",        settingEDT2,            "f", 0, 10,  5);
   sendJsonSettingObj("er_tariff1",        settingERT1,            "f", 0, 10,  5);
@@ -473,20 +475,20 @@ void sendDeviceSettings()
   sendJsonSettingObj("oled_type",         settingOledType,        "i", 0, 2);
   sendJsonSettingObj("oled_screen_time",  settingOledSleep,       "i", 1, 300);
   sendJsonSettingObj("oled_flip_screen",  settingOledFlip,        "i", 0, 1);
-  sendJsonSettingObj("index_page",        settingIndexPage,       "s", sizeof(settingIndexPage) -1);
-  sendJsonSettingObj("mqtt_broker",       settingMQTTbroker,      "s", sizeof(settingMQTTbroker) -1);
+  sendJsonSettingObj("index_page",        settingIndexPage,       "s", sizeof(settingIndexPage) );
+  sendJsonSettingObj("mqtt_broker",       settingMQTTbroker,      "s", sizeof(settingMQTTbroker) );
   sendJsonSettingObj("mqtt_broker_port",  settingMQTTbrokerPort,  "i", 1, 65535);
-  sendJsonSettingObj("mqtt_user",         settingMQTTuser,        "s", sizeof(settingMQTTuser) -1);
-  sendJsonSettingObj("mqtt_passwd",       settingMQTTpasswd,      "s", sizeof(settingMQTTpasswd) -1);
-  sendJsonSettingObj("mqtt_toptopic",     settingMQTTtopTopic,    "s", sizeof(settingMQTTtopTopic) -1);
+  sendJsonSettingObj("mqtt_user",         settingMQTTuser,        "s", sizeof(settingMQTTuser) );
+  sendJsonSettingObj("mqtt_passwd",       settingMQTTpasswd,      "s", sizeof(settingMQTTpasswd) );
+  sendJsonSettingObj("mqtt_toptopic",     settingMQTTtopTopic,    "s", sizeof(settingMQTTtopTopic) );
   sendJsonSettingObj("mqtt_interval",     settingMQTTinterval,    "i", 0, 600);
 #ifdef USE_MINDERGAS
-  sendJsonSettingObj("mindergastoken",  settingMindergasToken,    "s", sizeof(settingMindergasToken) -1);
+  sendJsonSettingObj("mindergastoken",  settingMindergasToken,    "s", sizeof(settingMindergasToken) );
 #endif
 #ifdef USE_INFLUXDB
-  sendJsonSettingObj("influxdb_hostname",           settingInfluxDBhostname,       "s", sizeof(settingInfluxDBhostname)-1);
+  sendJsonSettingObj("influxdb_hostname",           settingInfluxDBhostname,       "s", sizeof(settingInfluxDBhostname));
   sendJsonSettingObj("influxdb_port",              (int)settingInfluxDBport,      "i", 1, 65535);
-  sendJsonSettingObj("influxdb_databasename",      settingInfluxDBdatabasename,   "s", sizeof(settingInfluxDBdatabasename)-1);
+  sendJsonSettingObj("influxdb_databasename",      settingInfluxDBdatabasename,   "s", sizeof(settingInfluxDBdatabasename));
 #endif
   sendEndJsonObj();
 
