@@ -40,8 +40,8 @@ void processAPI()
 {
   char fName[40] = "";
   char URI[50]   = "";
- // String words[10];
- char words[10][10];
+  String words[10];
+  // char words[10][10];
 
   strlcpy( URI, httpServer.uri().c_str(), sizeof(URI) );
 
