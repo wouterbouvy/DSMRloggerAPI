@@ -5,6 +5,7 @@
         "xstring": "cpp",
         "xutility": "cpp",
         "*.tcc": "cpp",
-        "locale": "cpp"
+        "locale": "cpp",
+        "random": "cpp"
     }
 }

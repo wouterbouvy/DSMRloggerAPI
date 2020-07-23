@@ -50,7 +50,7 @@ void configModeCallback (WiFiManager *myWiFiManager)
     oled_Print_Msg(0, "<DSMRlogger-Next>", 0);
     oled_Print_Msg(1, "AP mode active", 0);
     oled_Print_Msg(2, "Connect to:", 0);
-    oled_Print_Msg(3, myWiFiManager->getConfigPortalSSID(), 0);
+    oled_Print_Msg(3, myWiFiManager->getConfigPortalSSID().c_str(), 0);
   }
 
 } // configModeCallback()

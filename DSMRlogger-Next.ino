@@ -162,17 +162,16 @@ void setup()
   //--- This is 8266 HWRNG used to seed the Random PRNG
   //--- Read more: https://config9.com/arduino/getting-a-truly-random-number-in-arduino/
   randomSeed(RANDOM_REG32); 
-  snprintf(settingHostname, sizeof(settingHostname), "%s", _DEFAULT_HOSTNAME);
-  Serial.printf("\n\nBooting....[%s]\r\n\r\n", String(_FW_VERSION).c_str());
+  strlcpy(settingHostname, _DEFAULT_HOSTNAME, sizeof(settingHostname));
+  //snprintf(settingHostname, sizeof(settingHostname), "%s", );
+  Serial.printf("\n\nBooting....[%s]\r\n\r\n", _FW_VERSION);
 
   if (settingOledType > 0)
   {
     oled_Init();
     oled_Clear();  // clear the screen so we can paint the menu.
     oled_Print_Msg(0, "<DSMRlogger-Next>", 0);
-    int8_t sPos = String(_FW_VERSION).indexOf(' ');
-    snprintf(cMsg, sizeof(cMsg), "[%s]", String(_FW_VERSION).substring(0,sPos).c_str());
-    oled_Print_Msg(1, cMsg, 0);
+    oled_Print_Msg(1, _SEMVER_FULL , 0);
     oled_Print_Msg(2, "The next DSMRlogger", 0);
     oled_Print_Msg(3, " >> Enjoy logging! <<", 1000);
     yield();
@@ -243,7 +242,7 @@ void setup()
   if (settingOledType > 0)
   {
     oled_Print_Msg(0, " <DSMRlogger-Next>", 0);
-    oled_Print_Msg(1, WiFi.SSID(), 0);
+    oled_Print_Msg(1, WiFi.SSID().c_str(), 0);
     snprintf(cMsg, sizeof(cMsg), "IP %s", WiFi.localIP().toString().c_str());
     oled_Print_Msg(2, cMsg, 1500);
   }
