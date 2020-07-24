@@ -298,10 +298,12 @@
             if (data[i].name == "fwversion")
             {
               document.getElementById('devVersion').innerHTML = json.devinfo[i].value;
-              var tmpFW = json.devinfo[i].value;
+              //var tmpFW = json.devinfo[i].value;
+              var tmpFW = json.devinfo[i].value.replace(/(\D*)(\d*\.\d*\.\d*)([-|+| ].*)/ig,"$2");
               firmwareVersion_dspl = tmpFW;
-              tmpX = tmpFW.substring(1, tmpFW.indexOf(' '));
-              tmpN = tmpX.split(".");
+              //tmpX = tmpFW.substring(1, tmpFW.indexOf(' '));
+              //tmpN = tmpX.split(".");
+              tmpN = tmpFW.split(".");
               firmwareVersion = tmpN[0]*10000 + tmpN[1]*1;
               console.log("firmwareVersion["+firmwareVersion+"] >= GitHubVersion["+GitHubVersion+"]");
               if (GitHubVersion == 0 || firmwareVersion >= GitHubVersion)
@@ -1761,11 +1763,13 @@ http://DSMR-API.local/api/v1/dev/settings</pre>", false);
         }
       })
       .then(text => {
-        var tmpGHF     = text.replace(/(\r\n|\n|\r)/gm, "");
+        // var tmpGHF     = text.replace(/(\r\n|\n|\r)/gm, "");
+        var tmpGHF     = text.replace(/(\D*)(\d*\.\d*\.\d*)([-|+| ].*)/ig,"$2");
         GitHubVersion_dspl = tmpGHF;
         console.log("parsed: GitHubVersion is ["+GitHubVersion_dspl+"]");
-        tmpX = tmpGHF.substring(1, tmpGHF.indexOf(' '));
-        tmpN = tmpX.split(".");
+        //tmpX = tmpGHF.substring(, tmpGHF.indexOf(' '));
+        //tmpN = tmpX.split(".");
+        tmpN = tmpGHF.split(".");
         GitHubVersion = tmpN[0]*10000 + tmpN[1]*1;
         
         console.log("firmwareVersion["+firmwareVersion+"] >= GitHubVersion["+GitHubVersion+"]");
