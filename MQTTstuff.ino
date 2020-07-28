@@ -188,11 +188,11 @@ struct buildJsonMQTT {
         
         if (Unit.length() > 0)
         {
-          createMQTTjsonMessage(mqttBuff, Name.c_str(), typecastValue(i.val()), Unit.c_str());
+          createMQTTjsonMessage(mqttBuff, Name.c_str(), i.val(), Unit.c_str());
         }
         else
         {
-          createMQTTjsonMessage(mqttBuff, Name.c_str(), typecastValue(i.val()));
+          createMQTTjsonMessage(mqttBuff, Name.c_str(), i.val());
         }
         
         //snprintf(cMsg, sizeof(cMsg), "%s", jsonString.c_str());

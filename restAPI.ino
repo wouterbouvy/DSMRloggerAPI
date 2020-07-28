@@ -548,7 +548,7 @@ struct buildJsonApiV0SmActual
         if (i.present()) 
         {
           //String Unit = Item::unit();
-          sendNestedJsonV0Obj(Name.c_str(), typecastValue(i.val()));
+          sendNestedJsonV0Obj(Name.c_str(), i.val());
         }
       }
   }
@@ -595,11 +595,11 @@ struct buildJsonApi
         
           if (Unit.length() > 0)
           {
-            sendNestedJsonObj(Name.c_str(), typecastValue(i.val()), Unit.c_str());
+            sendNestedJsonObj(Name.c_str(), i.val(), Unit.c_str());
           }
           else 
           {
-            sendNestedJsonObj(Name.c_str(), typecastValue(i.val()));
+            sendNestedJsonObj(Name.c_str(), i.val());
           }
         }
         else if (!onlyIfPresent)

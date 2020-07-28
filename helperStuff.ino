@@ -139,23 +139,23 @@ String upTime()
 } // upTime()
 
 //=======================================================================        
-template<typename Item>
-Item& typecastValue(Item& i) 
-{
-  return i;
-}
+// template<typename Item>
+// Item& typecastValue(Item& i) 
+// {
+//   return i;
+// }
 
-//=======================================================================        
-float typecastValue(TimestampedFixedValue i) 
-{
-  return strToFloat(String(i).c_str(), 3);
-}
+// //=======================================================================        
+// float typecastValue(TimestampedFixedValue i) 
+// {
+//   return strToFloat(String(i).c_str(), 3);
+// }
 
-//=======================================================================        
-float typecastValue(FixedValue i) 
-{
-  return i;
-}
+// //=======================================================================        
+// float typecastValue(FixedValue i) 
+// {
+//   return i;
+// }
 
 /***************************************************************************
 *
