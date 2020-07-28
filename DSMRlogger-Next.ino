@@ -324,7 +324,7 @@ void setup()
       if (settingIndexPage[0] != '/')
       {
         char tempPage[50] = "/";
-        strConcat(tempPage, 49, settingIndexPage);
+        strlcat(tempPage, settingIndexPage, 49);
         strlcpy(settingIndexPage, tempPage, sizeof(settingIndexPage));
       }
       hasAlternativeIndex        = true;

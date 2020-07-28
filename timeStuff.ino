@@ -149,23 +149,23 @@ time_t epoch(const char *timeStamp, int8_t len, bool syncTime)
 {
   char fullTimeStamp[16] = "";
 
-  strConcat(fullTimeStamp, 15, timeStamp);
+  strlcat(fullTimeStamp, timeStamp, sizeof(fullTimeStamp));
   if (Verbose2) DebugTf("epoch(%s) strlen([%d])\r\n", fullTimeStamp, strlen(fullTimeStamp));  
   switch(strlen(fullTimeStamp)) {
     case  4:  //--- timeStamp is YYMM
-              strConcat(fullTimeStamp, 15, "01010101X");
+              strlcat(fullTimeStamp, "01010101X", sizeof(fullTimeStamp));
               break;
     case  6:  //--- timeStamp is YYMMDD
-              strConcat(fullTimeStamp, 15, "010101X");
+              strlcat(fullTimeStamp, "010101X", sizeof(fullTimeStamp));
               break;
     case  8:  //--- timeStamp is YYMMDDHH
-              strConcat(fullTimeStamp, 15, "0101X");
+              strlcat(fullTimeStamp, "0101X", sizeof(fullTimeStamp));
               break;
     case  10:  //--- timeStamp is YYMMDDHHMM
-              strConcat(fullTimeStamp, 15, "01X");
+              strlcat(fullTimeStamp, "01X", sizeof(fullTimeStamp));
               break;
     case  12:  //--- timeStamp is YYMMDDHHMMSS
-              strConcat(fullTimeStamp, 15, "X");
+              strlcat(fullTimeStamp,  "X", sizeof(fullTimeStamp));
               break;
     //default:  return now();
   }

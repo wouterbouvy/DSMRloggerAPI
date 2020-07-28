@@ -40,8 +40,8 @@ void processAPI()
 {
   char fName[40] = "";
   char URI[50]   = "";
+  char buff[60] = "";
   String words[10];
-  // char words[10][10];
 
   strlcpy( URI, httpServer.uri().c_str(), sizeof(URI) );
 
@@ -64,13 +64,12 @@ void processAPI()
                                   , httpServer.client().remoteIP().toString().c_str()
                                   , URI
                                   , ESP.getFreeHeap() );
-    httpServer.send(500, "text/plain", "500: internal server error (low heap)\r\n"); 
+    httpServer.send(500, "text/plain", "500: internal server error (low heap)\r\n");
     return;
   }
 
   int8_t wc = splitString(URI, '/', words, 10);
-  //int8_t wc = hierwasik_splitCharS(URI, '/', words, 10);
-  
+
   if (Verbose2) 
   {
     DebugT(">>");
@@ -81,40 +80,41 @@ void processAPI()
     Debugln(" ");
   }
 
-  if (words[1] != "api")
-  {
-    sendApiNotFound(URI);
-    return;
-  }
+  // if (words[1] == "api")
+  // {
+    /* code */
+    if (words[2] == "v0") 
+    {
+      if (words[3] == "sm" && words[4] == "actual" ) 
+      {
+        //--- depreciated api. left here for backward compatibility
+        onlyIfPresent = true;
+        copyToFieldsArray(actualArray, actualElements);
+        sendJsonV0Fields();
+      }
+    } 
+    else if (words[2] == "v1") 
+    {
+      if (words[3] == "dev")
+      {
+        handleDevApi(URI, words[4].c_str(), words[5].c_str(), words[6].c_str());
+      }
+      else if (words[3] == "hist")
+      {
+        handleHistApi(URI, words[4].c_str(), words[5].c_str(), words[6].c_str());
+      }
+      else if (words[3] == "sm")
+      {
+        handleSmApi(URI, words[4].c_str(), words[5].c_str(), words[6].c_str());
+      }
+      else sendApiNotFound(URI);
+    } 
+    else
+    {
+      //not v0 or v1, then API not found
+      sendApiNotFound(URI);
+    }
 
-  if (words[2] == "v0" && words[3] == "sm" && words[4] == "actual")
-  {
-    //--- depreciated api. left here for backward compatibility
-    onlyIfPresent = true;
-    copyToFieldsArray(actualArray, actualElements);
-    sendJsonV0Fields();
-    return;
-  }
-  if (words[2] != "v1")
-  {
-    sendApiNotFound(URI);
-    return;
-  }
-
-  if (words[3] == "dev")
-  {
-    handleDevApi(URI, words[4].c_str(), words[5].c_str(), words[6].c_str());
-  }
-  else if (words[3] == "hist")
-  {
-    handleHistApi(URI, words[4].c_str(), words[5].c_str(), words[6].c_str());
-  }
-  else if (words[3] == "sm")
-  {
-    handleSmApi(URI, words[4].c_str(), words[5].c_str(), words[6].c_str());
-  }
-  else sendApiNotFound(URI);
-  
 } // processAPI()
 
 
@@ -122,15 +122,15 @@ void processAPI()
 void handleDevApi(const char *URI, const char *word4, const char *word5, const char *word6)
 {
   //DebugTf("word4[%s], word5[%s], word6[%s]\r\n", word4, word5, word6);
-  if (strcmp(word4, "info") == 0)
+  if (strcasecmp(word4, "info") == 0)
   {
     sendDeviceInfo();
   }
-  else if (strcmp(word4, "time") == 0)
+  else if (strcasecmp(word4, "time") == 0)
   {
     sendDeviceTime();
   }
-  else if (strcmp(word4, "settings") == 0)
+  else if (strcasecmp(word4, "settings") == 0)
   {
     if (httpServer.method() == HTTP_PUT || httpServer.method() == HTTP_POST)
     {
@@ -168,7 +168,7 @@ void handleDevApi(const char *URI, const char *word4, const char *word5, const c
       sendDeviceSettings();
     }
   }
-  else if (strcmp(word4, "debug") == 0)
+  else if (strcasecmp(word4, "debug") == 0)
   {
     sendDeviceDebug(URI, word5);
   }
@@ -184,17 +184,17 @@ void handleHistApi(const char *URI, const char *word4, const char *word5, const 
   char    fileName[20] = "";
   
   //DebugTf("word4[%s], word5[%s], word6[%s]\r\n", word4, word5, word6);
-  if (   strcmp(word4, "hours") == 0 )
+  if (strcasecmp(word4, "hours") == 0 )
   {
     fileType = HOURS;
     strlcpy(fileName, HOURS_FILE, sizeof(fileName));
   }
-  else if (strcmp(word4, "days") == 0 )
+  else if (strcasecmp(word4, "days") == 0 )
   {
     fileType = DAYS;
     strlcpy(fileName, DAYS_FILE, sizeof(fileName));
   }
-  else if (strcmp(word4, "months") == 0)
+  else if (strcasecmp(word4, "months") == 0)
   {
     fileType = MONTHS;
     if (httpServer.method() == HTTP_PUT || httpServer.method() == HTTP_POST)
@@ -230,7 +230,7 @@ void handleHistApi(const char *URI, const char *word4, const char *word5, const 
     sendApiNotFound(URI);
     return;
   }
-  if (strcmp(word5, "desc") == 0)
+  if (strcasecmp(word5, "desc") == 0)
         sendJsonHist(fileType, fileName, actTimestamp, true);
   else  sendJsonHist(fileType, fileName, actTimestamp, false);
 
@@ -266,7 +266,7 @@ void handleSmApi(const char *URI, const char *word4, const char *word5, const ch
 
     if (strlen(word5) > 0)
     {
-       memset(fieldsArray,0,sizeof(fieldsArray));
+      //  memset(fieldsArray,0, sizeof(fieldsArray));
        strlcpy(fieldsArray[0], "timestamp",34);
        strlcpy(fieldsArray[1],  word5, 35);
        fieldsElements = 2;
@@ -325,32 +325,32 @@ void sendDeviceInfo()
   char compileOptions[200] = "";
 
 #ifdef USE_REQUEST_PIN
-    strConcat(compileOptions, sizeof(compileOptions), "[USE_REQUEST_PIN]");
+    strlcat(compileOptions, "[USE_REQUEST_PIN]", sizeof(compileOptions));
 #endif
 #if defined( USE_PRE40_PROTOCOL )
-    strConcat(compileOptions, sizeof(compileOptions), "[USE_PRE40_PROTOCOL]");
+    strlcat(compileOptions, "[USE_PRE40_PROTOCOL]", sizeof(compileOptions));
 #elif defined( USE_BELGIUM_PROTOCOL )
-    strConcat(compileOptions, sizeof(compileOptions), "[USE_BELGIUM_PROTOCOL]");
+    strlcat(compileOptions, sizeof(compileOptions), "[USE_BELGIUM_PROTOCOL]", sizeof(compileOptions));
 #else
-    strConcat(compileOptions, sizeof(compileOptions), "[USE_DUTCH_PROTOCOL]");
+    strlcat(compileOptions, "[USE_DUTCH_PROTOCOL]", sizeof(compileOptions));
 #endif
 #ifdef USE_UPDATE_SERVER
-    strConcat(compileOptions, sizeof(compileOptions), "[USE_UPDATE_SERVER]");
+    strlcat(compileOptions, "[USE_UPDATE_SERVER]", sizeof(compileOptions));
 #endif
 #ifdef USE_MQTT
-    strConcat(compileOptions, sizeof(compileOptions), "[USE_MQTT]");
+    strlcat(compileOptions, "[USE_MQTT]", sizeof(compileOptions));
 #endif
 #ifdef USE_MINDERGAS
-    strConcat(compileOptions, sizeof(compileOptions), "[USE_MINDERGAS]");
+    strlcat(compileOptions, "[USE_MINDERGAS]", sizeof(compileOptions));
 #endif
 #ifdef USE_INFLUXDB
-    strConcat(compileOptions, sizeof(compileOptions), "[USE_INFLUXDB]");
+    strlcat(compileOptions, "[USE_INFLUXDB]", sizeof(compileOptions));
 #endif
 #ifdef USE_SYSLOGGER
-    strConcat(compileOptions, sizeof(compileOptions), "[USE_SYSLOGGER]");
+    strlcat(compileOptions, "[USE_SYSLOGGER]", sizeof(compileOptions));
 #endif
 #ifdef USE_NTP_TIME
-    strConcat(compileOptions, sizeof(compileOptions), "[USE_NTP_TIME]");
+    strlcat(compileOptions, sizeof(compileOptions), "[USE_NTP_TIME]");
 #endif
 
   sendStartJsonObj("devinfo");
@@ -475,20 +475,20 @@ void sendDeviceSettings()
   sendJsonSettingObj("oled_type",         settingOledType,        "i", 0, 2);
   sendJsonSettingObj("oled_screen_time",  settingOledSleep,       "i", 1, 300);
   sendJsonSettingObj("oled_flip_screen",  settingOledFlip,        "i", 0, 1);
-  sendJsonSettingObj("index_page",        settingIndexPage,       "s", sizeof(settingIndexPage) );
-  sendJsonSettingObj("mqtt_broker",       settingMQTTbroker,      "s", sizeof(settingMQTTbroker) );
+  sendJsonSettingObj("index_page",        settingIndexPage,       "s", sizeof(settingIndexPage) -1);
+  sendJsonSettingObj("mqtt_broker",       settingMQTTbroker,      "s", sizeof(settingMQTTbroker) -1);
   sendJsonSettingObj("mqtt_broker_port",  settingMQTTbrokerPort,  "i", 1, 65535);
-  sendJsonSettingObj("mqtt_user",         settingMQTTuser,        "s", sizeof(settingMQTTuser) );
-  sendJsonSettingObj("mqtt_passwd",       settingMQTTpasswd,      "s", sizeof(settingMQTTpasswd) );
-  sendJsonSettingObj("mqtt_toptopic",     settingMQTTtopTopic,    "s", sizeof(settingMQTTtopTopic) );
+  sendJsonSettingObj("mqtt_user",         settingMQTTuser,        "s", sizeof(settingMQTTuser) -1);
+  sendJsonSettingObj("mqtt_passwd",       settingMQTTpasswd,      "s", sizeof(settingMQTTpasswd) -1);
+  sendJsonSettingObj("mqtt_toptopic",     settingMQTTtopTopic,    "s", sizeof(settingMQTTtopTopic) -1);
   sendJsonSettingObj("mqtt_interval",     settingMQTTinterval,    "i", 0, 600);
 #ifdef USE_MINDERGAS
-  sendJsonSettingObj("mindergastoken",  settingMindergasToken,    "s", sizeof(settingMindergasToken) );
+  sendJsonSettingObj("mindergastoken",  settingMindergasToken,    "s", sizeof(settingMindergasToken) -1);
 #endif
 #ifdef USE_INFLUXDB
-  sendJsonSettingObj("influxdb_hostname",           settingInfluxDBhostname,       "s", sizeof(settingInfluxDBhostname));
+  sendJsonSettingObj("influxdb_hostname",           settingInfluxDBhostname,       "s", sizeof(settingInfluxDBhostname)-1);
   sendJsonSettingObj("influxdb_port",              (int)settingInfluxDBport,      "i", 1, 65535);
-  sendJsonSettingObj("influxdb_databasename",      settingInfluxDBdatabasename,   "s", sizeof(settingInfluxDBdatabasename));
+  sendJsonSettingObj("influxdb_databasename",      settingInfluxDBdatabasename,   "s", sizeof(settingInfluxDBdatabasename)-1);
 #endif
   sendEndJsonObj();
 
@@ -720,20 +720,20 @@ void sendApiNotFound(const char *URI)
   httpServer.send ( 404, "text/html", "<!DOCTYPE HTML><html><head>");
 
   strlcpy(cMsg, "<style>body { background-color: lightgray; font-size: 15pt;}", sizeof(cMsg));
-  strConcat(cMsg, sizeof(cMsg), "</style></head><body>");
+  strlcat(cMsg, "</style></head><body>", sizeof(cMsg));
   httpServer.sendContent(cMsg);
 
-  strlcpy(cMsg, "<h1>DSMR-logger</h1><b1>",   sizeof(cMsg));
+  strlcpy(cMsg, "<h1>DSMR-logger</h1><b1>", sizeof(cMsg));
   httpServer.sendContent(cMsg);
 
   strlcpy(cMsg, "<br>[<b>",   sizeof(cMsg));
-  strConcat(cMsg, sizeof(cMsg), URI);
-  strConcat(cMsg, sizeof(cMsg), "</b>] is not a valid ");
+  strlcat(cMsg, URI, sizeof(cMsg));
+  strlcat(cMsg, "</b>] is not a valid ", sizeof(cMsg));
   httpServer.sendContent(cMsg);
   
-  strlcpy(cMsg, "<a href=",   sizeof(cMsg));
-  strConcat(cMsg, sizeof(cMsg), "\"https://mrwheel-docs.gitbook.io/dsmrloggerapi/beschrijving-restapis\">");
-  strConcat(cMsg, sizeof(cMsg), "restAPI</a> call.");
+  strlcpy(cMsg, "<a href=", sizeof(cMsg));
+  strlcat(cMsg, "\"https://mrwheel-docs.gitbook.io/dsmrloggerapi/beschrijving-restapis\">", sizeof(cMsg));
+  strlcat(cMsg, "restAPI</a> call.", sizeof(cMsg));
   httpServer.sendContent(cMsg);
   
   strlcpy(cMsg, "</body></html>\r\n", sizeof(cMsg));

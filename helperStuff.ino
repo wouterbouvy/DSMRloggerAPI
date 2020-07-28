@@ -9,21 +9,6 @@
 ***************************************************************************      
 */
 
-
-//===========================================================================================
-// bool compare(String x, String y) 
-// { 
-//     for (int i = 0; i < min(x.length(), y.length()); i++) { 
-//       if (x[i] != y[i]) 
-//       {
-//         return (bool)(x[i] < y[i]); 
-//       }
-//     } 
-//     return x.length() < y.length(); 
-    
-// } // compare()
-
-
 //===========================================================================================
 boolean isValidIP(IPAddress ip)
 {
@@ -106,72 +91,7 @@ bool isNumericp(const char *timeStamp, int8_t len)
 } // isNumericp()
 
 
-// Stores the trimmed input string into the given output buffer, which must be
-// large enough to store the result.  If it is too small, the output is
-// truncated.
-size_t trimwhitespace(char *out, size_t len, const char *str)
-{
-  if(len == 0)
-    return 0;
-
-  const char *end;
-  size_t out_size;
-
-  // Trim leading space
-  while(isspace((unsigned char)*str)) str++;
-
-  if(*str == 0)  // All spaces?
-  {
-    *out = 0;
-    return 1;
-  }
-
-  // Trim trailing space
-  end = str + strlen(str) - 1;
-  while(end > str && isspace((unsigned char)*end)) end--;
-  end++;
-
-  // Set output size to minimum of trimmed string length and buffer size minus 1
-  out_size = (end - str) < len-1 ? (end - str) : len-1;
-
-  // Copy trimmed string and add null terminator
-  memcpy(out, str, out_size);
-  out[out_size] = 0;
-
-  return out_size;
-}//===========================================================================================
-
-// int8_t splitCharS(const char* inString, char delmiter, char* wOut[], uint8_t maxWords)
-// {
-
-//   int16_t inxS = 0, inxE = 0, wordCount = 0;
-  
-
-//     inStrng.trim();
-//     while(inxE < inStrng.length() && wordCount < maxWords) 
-//     {
-//       inxE  = inStrng.indexOf(delimiter, inxS);         //finds location of first ,
-//       wOut[wordCount] = inStrng.substring(inxS, inxE);  //captures first data String
-//       wOut[wordCount].trim();
-//       //DebugTf("[%d] => [%c] @[%d] found[%s]\r\n", wordCount, delimiter, inxE, wOut[wordCount].c_str());
-//       inxS = inxE;
-//       inxS++;
-//       wordCount++;
-//     }
-//     // zero rest of the words
-//     for(int i=wordCount; i< maxWords; i++)
-//     {
-//       wOut[wordCount][0] = 0;
-//     }
-//     // if not whole string processed place rest in last word
-//     if (inxS < inStrng.length()) 
-//     {
-//       wOut[maxWords-1] = inStrng.substring(inxS, inStrng.length());  // store rest of String      
-//     }
-
-//     return wordCount;
-
-// }
+//===========================================================================================
 
 int8_t splitString(String inStrng, char delimiter, String wOut[], uint8_t maxWords) 
 {
@@ -220,60 +140,45 @@ String upTime()
 
 
 //===========================================================================================
-void strConcat(char *dest, int maxLen, const char *src)
-{
-  if (strlen(dest) + strlen(src) < maxLen) 
-  {
-    strcat(dest, src);
-  } 
-  else
-  {
-    DebugTf("Combined string > %d chars\r\n", maxLen);
-  }
+// void strConcat(char *dest, int maxLen, float v, int dec)
+// {
+//   static char buff[25];
+//   if (dec == 0)       sprintf(buff,"%.0f", v);
+//   else if (dec == 1)  sprintf(buff,"%.1f", v);
+//   else if (dec == 2)  sprintf(buff,"%.2f", v);
+//   else if (dec == 3)  sprintf(buff,"%.3f", v);
+//   else if (dec == 4)  sprintf(buff,"%.4f", v);
+//   else if (dec == 5)  sprintf(buff,"%.5f", v);
+//   else                sprintf(buff,"%f",   v);
+
+//   if (strlen(dest) + strlen(buff) < maxLen) 
+//   {
+//     strcat(dest, buff);
+//   } 
+//   else
+//   {
+//     DebugTf("Combined string > %d chars\r\n", maxLen);
+//   }
   
-} // strConcat()
+// } // strConcat()
 
 
-//===========================================================================================
-void strConcat(char *dest, int maxLen, float v, int dec)
-{
-  static char buff[25];
-  if (dec == 0)       sprintf(buff,"%.0f", v);
-  else if (dec == 1)  sprintf(buff,"%.1f", v);
-  else if (dec == 2)  sprintf(buff,"%.2f", v);
-  else if (dec == 3)  sprintf(buff,"%.3f", v);
-  else if (dec == 4)  sprintf(buff,"%.4f", v);
-  else if (dec == 5)  sprintf(buff,"%.5f", v);
-  else                sprintf(buff,"%f",   v);
+// //===========================================================================================
+// void strConcat(char *dest, int maxLen, int32_t v)
+// {
+//   static char buff[25];
+//   sprintf(buff,"%d", v);
 
-  if (strlen(dest) + strlen(buff) < maxLen) 
-  {
-    strcat(dest, buff);
-  } 
-  else
-  {
-    DebugTf("Combined string > %d chars\r\n", maxLen);
-  }
+//   if (strlen(dest) + strlen(buff) < maxLen) 
+//   {
+//     strcat(dest, buff);
+//   } 
+//   else
+//   {
+//     DebugTf("Combined string > %d chars\r\n", maxLen);
+//   }
   
-} // strConcat()
-
-
-//===========================================================================================
-void strConcat(char *dest, int maxLen, int32_t v)
-{
-  static char buff[25];
-  sprintf(buff,"%d", v);
-
-  if (strlen(dest) + strlen(buff) < maxLen) 
-  {
-    strcat(dest, buff);
-  } 
-  else
-  {
-    DebugTf("Combined string > %d chars\r\n", maxLen);
-  }
-  
-} // strConcat()
+// } // strConcat()
 
 
 //===========================================================================================

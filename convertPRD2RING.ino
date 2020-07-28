@@ -109,13 +109,13 @@ void writeToRINGfile(int8_t fileType, const char *key, float EDT1, float EDT2
   
   switch(fileType)
   {
-    case HOURS:   strConcat(newKey, 14, "0101X");
+    case HOURS:   strlcat(newKey, "0101X", 14);
                   recSlot = timestampToHourSlot(newKey,  strlen(newKey));
                   break;
-    case DAYS:    strConcat(newKey, 14, "230101X");
+    case DAYS:    strlcat(newKey, "230101X", 14);
                   recSlot = timestampToDaySlot(newKey,   strlen(newKey));
                   break;
-    case MONTHS:  strConcat(newKey, 14, "01230101X");
+    case MONTHS:  strlcat(newKey, "01230101X", 14);
                   recSlot = timestampToMonthSlot(newKey, strlen(newKey));
                   break;
                   

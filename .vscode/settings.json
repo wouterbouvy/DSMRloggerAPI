@@ -6,6 +6,8 @@
         "xutility": "cpp",
         "*.tcc": "cpp",
         "locale": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "algorithm": "cpp",
+        "sstream": "cpp"
     }
 }

@@ -131,7 +131,7 @@ uint16_t buildDataRecordFromJson(char *recIn, String jsonIn)
     if (wPair[0].indexOf("ert2")  == 0)  uERT2 = wPair[1].toFloat();
     if (wPair[0].indexOf("gdt")   == 0)  uGDT  = wPair[1].toFloat();
   }
-  strConcat(uKey, 15, "0101X");
+  strlcat(uKey, "0101X", 15);
   recSlot = timestampToMonthSlot(uKey, strlen(uKey));
  
   DebugTf("MONTHS: Write [%s] to slot[%02d] in %s\r\n", uKey, recSlot, MONTHS_FILE);
@@ -601,9 +601,9 @@ bool DSMRfileExist(const char* fileName, bool doDisplay)
   char fName[30] = "";
   if (fileName[0] != '/')
   {
-    strConcat(fName, 5, "/");
+    strlcat(fName, "/", 5);
   }
-  strConcat(fName, 29, fileName);
+  strlcat(fName, fileName, 29);
   
   DebugTf("check if [%s] exists .. ", fName);
   if (settingOledType > 0)

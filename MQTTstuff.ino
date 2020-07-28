@@ -183,7 +183,7 @@ struct buildJsonMQTT {
         if (settingMQTTtopTopic[strlen(settingMQTTtopTopic)-1] == '/')
               snprintf(topicId, sizeof(topicId), "%s",  settingMQTTtopTopic);
         else  snprintf(topicId, sizeof(topicId), "%s/", settingMQTTtopTopic);
-        strConcat(topicId, sizeof(topicId), Name.c_str());
+        strlcat(topicId, Name.c_str(), sizeof(topicId));
         if (Verbose2) DebugTf("topicId[%s]\r\n", topicId);
         
         if (Unit.length() > 0)

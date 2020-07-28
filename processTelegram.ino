@@ -27,7 +27,7 @@ void processTelegram()
     oled_Print_Msg(2, cMsg, 0);
   }
                                                     
-  strncpy(newTimestamp, DSMRdata.timestamp.c_str(), sizeof(newTimestamp)); 
+  strlcpy(newTimestamp, DSMRdata.timestamp.c_str(), sizeof(newTimestamp)); 
   //--- newTimestamp is the timestamp from the last telegram
   newT = epoch(newTimestamp, strlen(newTimestamp), true); // update system time
   //--- actTimestamp is the timestamp from the previous telegram
@@ -65,7 +65,7 @@ void processTelegram()
     {
       //--- YES! actTimestamp := newTimestamp
       //--- and update the files with the actTimestamp
-      strlcpy(actTimestamp, newTimestamp, sizeof(actTimestamp));
+      strlcpy(actTimestamp,  newTimestamp, sizeof(actTimestamp));
       writeDataToFiles();
     }
     else  //--- NO, only the hour has changed

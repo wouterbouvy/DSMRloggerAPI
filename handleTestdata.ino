@@ -117,7 +117,7 @@ void handleTestdata()
 //    calcCRC = decodeTelegram(len);  // why??
     }
     if (Verbose2) Debugf("!\r\n");
-    strConcat(telegram, sizeof(telegram), "!\r\n");
+    strlcat(telegram,  "!\r\n", sizeof(telegram);
 
 #else
     for (int16_t line = 0; line < 38; line++) {
@@ -127,7 +127,7 @@ void handleTestdata()
     } 
     snprintf(cMsg, sizeof(cMsg), "!%04X\r\n\r\n", (calcCRC & 0xFFFF));
     if (Verbose2) Debug(cMsg);
-    strConcat(telegram, sizeof(telegram), cMsg);
+    strlcat(telegram, cMsg, sizeof(telegram));
     
 #endif
 
@@ -276,7 +276,7 @@ int16_t buildTelegram40(int16_t line, char telegramLine[])
 
   if (line < 37) {
     if (Verbose2) Debug(telegramLine); 
-    strConcat(telegram, sizeof(telegram), telegramLine);
+    strlcat(telegram, telegramLine, sizeof(telegram));
   }
 
   for(len = 0; len < MAXLINELENGTH, telegramLine[len] != '\0'; len++) {}    
@@ -378,7 +378,7 @@ int16_t buildTelegram30(int16_t line, char telegramLine[])
 
   if (line < 19) {
     if (Verbose2) Debug(telegramLine); 
-    strConcat(telegram, sizeof(telegram), telegramLine);
+    strlcat(telegram, telegramLine, sizeof(telegram));
   }
 
   for(len = 0; len < MAXLINELENGTH, telegramLine[len] != '\0'; len++) {}    
