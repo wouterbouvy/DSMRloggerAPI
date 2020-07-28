@@ -393,7 +393,6 @@ int16_t buildTelegram30(int16_t line, char telegramLine[])
 void updateMeterValues(uint8_t period) 
 {
   float  Factor = 1.098;
-  String wsString = "";
   /*
   switch(period) {
     case SMonth:  Factor = 30.0 * 24.0; break;

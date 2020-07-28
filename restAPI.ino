@@ -370,20 +370,20 @@ void sendDeviceInfo()
   sendNestedJsonObj("coreversion", String( ESP.getCoreVersion() ).c_str() );
   sendNestedJsonObj("sdkversion", String( ESP.getSdkVersion() ).c_str());
   sendNestedJsonObj("cpufreq", ESP.getCpuFreqMHz(), "MHz");
-  sendNestedJsonObj("sketchsize", formatFloat( (ESP.getSketchSize() / 1024.0), 3), "kB");
-  sendNestedJsonObj("freesketchspace", formatFloat( (ESP.getFreeSketchSpace() / 1024.0), 3), "kB");
+  sendNestedJsonObj("sketchsize",  (float)(ESP.getSketchSize() / 1024.0), "kB");
+  sendNestedJsonObj("freesketchspace",  (float)(ESP.getFreeSketchSpace() / 1024.0), "kB");
 
   if ((ESP.getFlashChipId() & 0x000000ff) == 0x85) 
         snprintf(cMsg, sizeof(cMsg), "%08X (PUYA)", ESP.getFlashChipId());
   else  snprintf(cMsg, sizeof(cMsg), "%08X", ESP.getFlashChipId());
   sendNestedJsonObj("flashchipid", cMsg);  // flashChipId
-  sendNestedJsonObj("flashchipsize", formatFloat((ESP.getFlashChipSize() / 1024.0 / 1024.0), 3), "MB");
-  sendNestedJsonObj("flashchiprealsize", formatFloat((ESP.getFlashChipRealSize() / 1024.0 / 1024.0), 3), "MB");
+  sendNestedJsonObj("flashchipsize", (float)(ESP.getFlashChipSize() / 1024.0 / 1024.0), "MB");
+  sendNestedJsonObj("flashchiprealsize", (float)(ESP.getFlashChipRealSize() / 1024.0 / 1024.0), "MB");
 
   SPIFFS.info(SPIFFSinfo);
-  sendNestedJsonObj("spiffssize", formatFloat( (SPIFFSinfo.totalBytes / (1024.0 * 1024.0)), 0), "MB");
+  sendNestedJsonObj("spiffssize", (float)(SPIFFSinfo.totalBytes / (1024.0 * 1024.0)), "MB");
 
-  sendNestedJsonObj("flashchipspeed", formatFloat((ESP.getFlashChipSpeed() / 1000.0 / 1000.0), 0), "MHz");
+  sendNestedJsonObj("flashchipspeed", (float)(ESP.getFlashChipSpeed() / 1000.0 / 1000.0), "MHz");
 
   FlashMode_t ideMode = ESP.getFlashChipMode();
   sendNestedJsonObj("flashchipmode", flashMode[ideMode]); 
@@ -422,7 +422,7 @@ void sendDeviceInfo()
   else  sendNestedJsonObj("mqttbroker_connected", "no");
 #endif
 #ifdef USE_MINDERGAS
-  snprintf(cMsg, sizeof(cMsg), "%s:%d", timeLastResponse, intStatuscodeMindergas);
+  snprintf(cMsg, sizeof(cMsg), "%s:%d",       timeLastResponse, intStatuscodeMindergas);
   sendNestedJsonObj("mindergas_response",     txtResponseMindergas);
   sendNestedJsonObj("mindergas_status",       cMsg);
 #endif
