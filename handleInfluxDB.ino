@@ -10,9 +10,8 @@
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************      
 *      Created by Robert van den Breemen (26 june 2020)
+*                 my influxdb implementation (30 juli 2020)
 */  
-
-static const char UserAgent[] PROGMEM = "influxdb-client-arduino/DSMRlogger (" _SEMVER_CORE ")";
 
 #define LINE_BUFFER 250
 char buffer[LINE_BUFFER] {0};
@@ -23,27 +22,25 @@ WiFiClient  influxdbClient;
 
 void initInfluxDB()
 {
-  // if ( sizeof(settingInfluxDBhostname) < 8 )  return; 
+  if ( sizeof(settingInfluxDBhostname) < 8 )  return; 
 
-  // // Set InfluxDB 1 authentication params
-  // // Only needed when query's are dMsg), "http://%s:%d", settingInfluxDBhostname , settingInfluxDBport);
-  // DebugTf("InfluxDB Connection Setup: [%s] - database: [%s]\r\n", cMsg , settingInfluxDBdatabasename);
+  // Set InfluxDB 1 authentication params
+  // Only needed when query's are dMsg), "http://%s:%d", settingInfluxDBhostname , settingInfluxDBport);
+  DebugTf("InfluxDB Connection Setup: [%s] - database: [%s]\r\n", cMsg , settingInfluxDBdatabasename);
   
-  // snprint(sAPIwrite, sizeof(sAPIwrite), "/write?db=%s&precision=s", settingInfluxDBdatabasename);
-  // DebugTf("API influxdb: %s",sAPIwrite);
+  snprint(sAPIwrite, sizeof(sAPIwrite), "/write?db=%s&precision=s", settingInfluxDBdatabasename);
+  DebugTf("API influxdb: %s",sAPIwrite);
 
-  // if (influxdbClient.connect(settingInfluxDBhostname,settingInfluxDBport)) {
-  //    DebugT("Connected to InfluxDB: ");
-  //    Debugln(cMsg);
-  // }  
+  if (influxdbClient.connect(settingInfluxDBhostname,settingInfluxDBport)) {
+     DebugT("Connected to InfluxDB: ");
+     Debugln(cMsg);
+  }  
 }
 
 //=========================================================================
 // function to add a value to the lineprotocol buffer for influxdb
 //=========================================================================
-void addvalueInfluxdb(char *buff, const char *cValue)one?
-  //client.setConnectionParamsV1(INFLUXDB_URL, INFLUXDB_DB_NAME, INFLUXDB_USER, INFLUXDB_PASSWORD);   
-  snprintf(cMsg, sizeof(c
+void addvalueInfluxdb(char *buff, const char *cValue)
 {
   strlcat(buff, cValue, LINE_BUFFER);
 } // addvalueInfluxdb(*char, *char)
@@ -75,7 +72,8 @@ void addvalueInfluxdb(char *buff, float fValue)
   snprintf(sTmp, 10, "%.3f", fValue);
   strlcat(buff, sTmp, LINE_BUFFER);
 } // addvalueInfluxdb(*char, float)
-//===========================================================================================
+
+//=========[ writeInfluxDataPoints ]==========================================================
 
 struct writeInfluxDataPoints {
 
@@ -95,26 +93,12 @@ struct writeInfluxDataPoints {
           strlcat(buffer, " ", sizeof(buffer));                             //whitespace delimiter for epoch timestamp
           strlcat(buffer, itoa(thisEpoch, sTmp, 10), sizeof(buffer));       //add epoch timestamp
           DebugT("Influxdb lineprotocol [");Debug(buffer);Debugln("]");
-          
-          //curl -i -XPOST "http://localhost:8086/write?db=science_is_cool" --data-binary 'weather,location=us-midwest temperature=82 1465839830100400200'
-          
-          // if (influxdbClient.connect(settingInfluxDBhostname, settingInfluxDBport)) 
-          // {
-          //     DebugTf("Influxdb POST %s [%s]\r\n", sAPIwrite, buffer);
-          // } else
-          // {
-          //   DebugTf("Error connection to [%s:%d]\r\n", settingInfluxDBhostname, settingInfluxDBport);
-          // }
-          
-          // if (!MQTTclient.publish(topicId, mqttBuff) )
-          // {
-          //   DebugTf("Error publish(%s) [%s] [%d bytes]\r\n", topicId, mqttBuff, (strlen(topicId) + strlen(mqttBuff)));
-          // }
         } // if data has a unit
       } // if data is present
   } //apply
 };  // struct writeInfluxDataPoints
 
+//=========[ handleInfluxDB ]=================================================================
 
 void handleInfluxDB()
 {
