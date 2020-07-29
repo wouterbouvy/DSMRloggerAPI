@@ -237,9 +237,9 @@ void updateFirmware()
 {
 #ifdef USE_UPDATE_SERVER
   DebugTln(F("Redirect to updateIndex .."));
-  doRedirect("wait ... ", 1, "/updateIndex", false);
+  doRedirect("Wait ... ", 1, "/updateIndex");
 #else
-  doRedirect("UpdateServer not available", 10, "/", false);
+  doRedirect("UpdateServer not available", 10, "/");
 #endif
       
 } // updateFirmware()
@@ -247,13 +247,16 @@ void updateFirmware()
 //=====================================================================================
 void reBootESP()
 {
-  DebugTln(F("Redirect and ReBoot .."));
-  doRedirect("Reboot DSMR-logger ..", 60, "/", true);
-      
+  DebugTln(F("Redirect and reboot in 5 seconds..."));
+  doRedirect("Reboot DSMR-logger ...", 60, "/");
+
+  delay(5000);
+  ESP.restart();
+  delay(5000);  
 } // reBootESP()
 
 //=====================================================================================
-void doRedirect(String msg, int wait, const char* URL, bool reboot)
+void doRedirect(String msg, int wait, const char* URL
 {
   String redirectHTML = 
   "<!DOCTYPE HTML><html lang='en-US'>"
@@ -288,12 +291,5 @@ void doRedirect(String msg, int wait, const char* URL, bool reboot)
   
   DebugTln(msg);
   httpServer.send(200, "text/html", redirectHTML);
-  if (reboot) 
-  {
-    delay(5000);
-    ESP.restart();
-    yield();
-    delay(5000);
-  }
-  
+
 } // doRedirect()
