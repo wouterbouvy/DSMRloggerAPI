@@ -13,28 +13,22 @@
 *                 my influxdb implementation (30 juli 2020)
 */  
 
+#include <ESP8266HTTPClient.h>
+
 #define LINE_BUFFER 250
 char buffer[LINE_BUFFER] {0};
 char sAPIwrite[100];
 
 time_t thisEpoch;
 WiFiClient  influxdbClient;   
+HTTPClient  http;
 
 void initInfluxDB()
 {
   if ( sizeof(settingInfluxDBhostname) < 8 )  return; 
 
-  // Set InfluxDB 1 authentication params
-  // Only needed when query's are dMsg), "http://%s:%d", settingInfluxDBhostname , settingInfluxDBport);
-  DebugTf("InfluxDB Connection Setup: [%s] - database: [%s]\r\n", cMsg , settingInfluxDBdatabasename);
-  
-  snprint(sAPIwrite, sizeof(sAPIwrite), "/write?db=%s&precision=s", settingInfluxDBdatabasename);
-  DebugTf("API influxdb: %s",sAPIwrite);
-
-  if (influxdbClient.connect(settingInfluxDBhostname,settingInfluxDBport)) {
-     DebugT("Connected to InfluxDB: ");
-     Debugln(cMsg);
-  }  
+  snprintf(sAPIwrite, sizeof(sAPIwrite),"http://%s:%d/write?db=%s&precision=s", settingInfluxDBhostname , settingInfluxDBport, settingInfluxDBdatabasename);
+  DebugTf("API influxdb: %s\r\n",sAPIwrite);
 }
 
 //=========================================================================
@@ -84,7 +78,6 @@ struct writeInfluxDataPoints {
         if (strlen(Item::unit()) != 0) 
         {
           char sTmp[10];
-          memset(buffer, 0, sizeof(buffer));                                //clear lineprotovol
           strlcpy(buffer, Item::unit(), sizeof(buffer));                    //measurement name
           strlcat(buffer, ",instance=", sizeof(buffer));                    //addtag "instance"
           strncat_P(buffer, (PGM_P)Item::name, sizeof(buffer));             //DSMR items name = tag value
@@ -92,7 +85,32 @@ struct writeInfluxDataPoints {
           addvalueInfluxdb(buffer, i.val());                                //add actual value (polymorphism addvalue)
           strlcat(buffer, " ", sizeof(buffer));                             //whitespace delimiter for epoch timestamp
           strlcat(buffer, itoa(thisEpoch, sTmp, 10), sizeof(buffer));       //add epoch timestamp
-          DebugT("Influxdb lineprotocol [");Debug(buffer);Debugln("]");
+          
+          DebugT("Influxdb lineprotocol buffer: [");Debug(buffer);Debugln();
+          //Now sent the data
+          if(WiFi.status()== WL_CONNECTED){
+            // HTTPClient http;
+            // Your Domain name with URL path or IP address with path
+            http.begin(sAPIwrite);
+            http.setReuse(true); //try server keep-alive to prevent rebuilding http connection
+            const char * headerKeys[] = {"Transfer-Encoding"} ;
+            http.collectHeaders(headerKeys, 1);
+            // Specify content-type header
+            http.addHeader(F("Content-Type"), F("text/plain)"));
+            //Now sent the data
+            int httpResponseCode = http.POST((uint8_t*)buffer, strlen(buffer));
+            if (httpResponseCode==204)
+            {
+              if (Verbose1) DebugTf("HTTP Response code: (%d) %s\r\n", httpResponseCode, http.getString().c_str());
+            }
+            else
+            {
+              DebugTf("HTTP Error code: (%d) %s\r\n", httpResponseCode, http.errorToString(httpResponseCode).c_str());
+            } 
+            http.end();
+          } //wifi.status==wl_connected
+
+
         } // if data has a unit
       } // if data is present
   } //apply
@@ -112,8 +130,9 @@ void handleInfluxDB()
     thisEpoch = UTC.now();  
     DebugTf("Writing telegram to influxdb - Epoc = %d (this) %d (NL) %d (UTC) \r\n", (int)thisEpoch, (int)localTZ.now(), (int)UTC.now());
     uint32_t timeThis = millis();
+
     DSMRdata.applyEach(writeInfluxDataPoints());
-  
+ 
     DebugTf("Influxdb write took [%d] ms\r\n", (int)(millis()-timeThis));
   }
   

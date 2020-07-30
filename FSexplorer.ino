@@ -291,8 +291,9 @@ void doRedirect(String msg, int wait, const char* URL, bool reboot)
   if (reboot) 
   {
     delay(5000);
+    //WiFi.forceSleepBegin(); wdt_reset(); ESP.restart(); while(1)wdt_reset();
     ESP.restart();
-    yield();
+    // ESP.reset();
     delay(5000);
   }
   

@@ -138,6 +138,46 @@ String upTime()
 
 } // upTime()
 
+
+//===========================================================================================
+
+//taken from influxdbclient.cpp == escapeJSONString
+static String escapeJSONString(String &value) {
+    String ret;
+    int d = 0;
+    int i,from = 0;
+    while((i = value.indexOf('"',from)) > -1) {
+        d++;
+        if(i == value.length()-1) {
+            break;
+        }
+        from = i+1;
+    }
+    ret.reserve(value.length()+d); //most probably we will escape just double quotes
+    for (char c: value)
+    {
+        switch (c)
+        {
+            case '"': ret += "\\\""; break;
+            case '\\': ret += "\\\\"; break;
+            case '\b': ret += "\\b"; break;
+            case '\f': ret += "\\f"; break;
+            case '\n': ret += "\\n"; break;
+            case '\r': ret += "\\r"; break;
+            case '\t': ret += "\\t"; break;
+            default:
+                if ('\x00' <= c && c <= '\x1f') {
+                    ret += "\\u";
+                    char buf[3 + 8 * sizeof(unsigned int)];
+                    sprintf(buf,  "\\u%04u", c);
+                    ret += buf;
+                } else {
+                    ret += c;
+                }
+        }
+    }
+    return ret;
+}
 //=======================================================================        
 // template<typename Item>
 // Item& typecastValue(Item& i) 
