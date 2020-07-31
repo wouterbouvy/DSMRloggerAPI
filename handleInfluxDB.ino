@@ -98,14 +98,16 @@ struct writeInfluxDataPoints {
             http.addHeader(F("Content-Type"), F("text/plain)"));
             //Now sent the data
             int httpResponseCode = http.POST((uint8_t*)buffer, strlen(buffer));
+            yield();
             if (httpResponseCode==204)
             {
               if (Verbose1) DebugTf("HTTP Response code: (%d) %s\r\n", httpResponseCode, http.getString().c_str());
             }
             else
             {
-              DebugTf("HTTP Error code: (%d) %s\r\n", httpResponseCode, http.errorToString(httpResponseCode).c_str());
-            } 
+              if (Verbose1) DebugTf("HTTP Error code: (%d) %s\r\n", httpResponseCode, http.errorToString(httpResponseCode).c_str());
+            }
+            yield();
             http.end();
           } //wifi.status==wl_connected
 
