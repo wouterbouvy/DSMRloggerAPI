@@ -126,8 +126,11 @@ void handleInfluxDB()
     //New telegram received, let's forward that to influxDB
     lastTelegram = telegramCount;
     //Setup the timestamp for this telegram, so all points for this batch are the same.
-    thisEpoch = now() + OffsetDST() * SECS_PER_MIN;  
-    DebugTf("Writing telegram to influxdb - Epoc = %d (now) \r\n", (int)thisEpoch);
+    thisEpoch = UTC.now(); 
+    DebugTf("UTC epoch     : %d\r\n", (int)UTC.now());
+    DebugTf("local epoch   : %d\r\n", (int)localTZ.now());
+    DebugTf("default epoch : %d\r\n", (int)now());
+    DebugTf("Writing telegram to influxdb - Epoc UTC = %d (now) \r\n", (int)thisEpoch);
     uint32_t timeThis = millis();
 
     DSMRdata.applyEach(writeInfluxDataPoints());

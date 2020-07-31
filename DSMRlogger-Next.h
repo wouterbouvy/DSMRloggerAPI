@@ -9,8 +9,8 @@
 ***************************************************************************      
 */  
 
-#include <TimeLib.h>            // https://github.com/PaulStoffregen/Time
-//#include <ezTime.h>             // https://github.com/ropg/ezTime
+//#include <TimeLib.h>            // https://github.com/PaulStoffregen/Time
+#include <ezTime.h>             // https://github.com/ropg/ezTime
 #include <TelnetStream.h>       // https://github.com/jandrassy/TelnetStream/commit/1294a9ee5cc9b1f7e51005091e351d60c8cddecf
 #include "safeTimers.h"
 
@@ -231,6 +231,7 @@ char      settingIndexPage[50];
 char      settingMQTTbroker[101], settingMQTTuser[40], settingMQTTpasswd[30], settingMQTTtopTopic[21];
 int32_t   settingMQTTinterval, settingMQTTbrokerPort;
 String    pTimestamp;
+Timezone  localTZ;
 
 //===========================================================================================
 // setup timers 

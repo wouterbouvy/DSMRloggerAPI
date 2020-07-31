@@ -278,6 +278,18 @@ void setup()
   
 //=============end Networkstuff======================================
 
+//================ Start ezTime ===================================
+  DebugTln("before UTC TZ     : " + UTC.dateTime());
+  DebugT("Wait for timesync");
+  waitForSync();
+  localTZ.setLocation("Europe/Amsterdam");
+  localTZ.setDefault();
+  DebugTln("before local TZ   : " + localTZ.dateTime());
+  DebugTln("after  UTC TZ     : " + UTC.dateTime());
+  DebugTln("after  local TZ   : " + localTZ.dateTime());
+  DebugTln("after  default TZ : " + dateTime());
+//================ End ezTime   ===================================
+
 #if defined(USE_NTP_TIME)                                   //USE_NTP
 //================ startNTP =========================================
   if (settingOledType > 0)                                  //USE_NTP
@@ -477,6 +489,7 @@ void setup()
 
 //================ End of InfluxDB ================================
 
+
 //================ The final part of the Setup =====================
 
   snprintf(cMsg, sizeof(cMsg), "Last reset reason: [%s]\r", ESP.getResetReason().c_str());
@@ -596,6 +609,7 @@ void doSystemTasks()
     checkFlashButton();
   }
 
+  events(); //ezTime handler
   yield();
 
 } // doSystemTasks()

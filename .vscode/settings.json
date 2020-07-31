@@ -8,6 +8,7 @@
         "locale": "cpp",
         "random": "cpp",
         "algorithm": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "memory": "cpp"
     }
 }

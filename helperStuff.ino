@@ -179,23 +179,16 @@ static String escapeJSONString(String &value) {
     return ret;
 }
 //=======================================================================        
-// template<typename Item>
-// Item& typecastValue(Item& i) 
-// {
-//   return i;
-// }
 
-// //=======================================================================        
-// float typecastValue(TimestampedFixedValue i) 
-// {
-//   return strToFloat(String(i).c_str(), 3);
-// }
-
-// //=======================================================================        
-// float typecastValue(FixedValue i) 
-// {
-//   return i;
-// }
+void ESPreboot()
+{ 
+  //wait 3 seconds, and then reboot.
+  WiFi.forceSleepBegin(); //stop wifi 
+  delay(3000);
+  //wdt_reset(); ESP.restart(); while(1)wdt_reset();
+  ESP.restart(); //soft reset
+  //ESP.reset(); //hard reset
+}
 
 /***************************************************************************
 *
