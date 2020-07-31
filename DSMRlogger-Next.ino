@@ -468,16 +468,6 @@ void setup()
 
   DebugTf("Startup complete! actTimestamp[%s]\r\n", actTimestamp);  
   writeToSysLog("Startup complete! actTimestamp[%s]", actTimestamp);  
-
-
-//================ Start Timezone ==================================
-  //-- setup timezone
-  //localTZ.setLocation("Europe/Amsterdam");
-  localTZ.setPosix("CET-1CEST,M3.5.0,M10.5.0/3"); //Europe/Amsterdam
-  localTZ.setDefault();
-  //DebugT("Amsterdam time:");Debugln(localTZ.dateTime());
-  //DebugT("UTC       time:");Debugln(UTC.dateTime());
-//================ End Timezone ====================================
   
 //================ Start InfluxDB  =================================
 

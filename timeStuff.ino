@@ -185,7 +185,7 @@ time_t epoch(const char *timeStamp, int8_t len, bool syncTime)
   time_t nT;
   time_t savEpoch = now();
   
-  localTZ.setTime(HourFromTimestamp(fullTimeStamp)
+  setTime(HourFromTimestamp(fullTimeStamp)
          ,MinuteFromTimestamp(fullTimeStamp)
          ,SecondFromTimestamp(fullTimeStamp)
          ,DayFromTimestamp(fullTimeStamp)
@@ -196,15 +196,9 @@ time_t epoch(const char *timeStamp, int8_t len, bool syncTime)
   nT = now();
   if (!syncTime)
   {
-    localTZ.setTime(savEpoch);
+    setTime(savEpoch);
   }
 
-  if (Verbose2)
-  { 
-    DebugT("Amsterdam time:");Debugln(localTZ.dateTime());
-    DebugT("UTC       time:");Debugln(UTC.dateTime());
-  }
-  
   return nT;
 
 } // epoch()

@@ -18,6 +18,8 @@
 #define LINE_BUFFER 250
 char buffer[LINE_BUFFER] {0};
 char sAPIwrite[100];
+char sTmp[20];
+
 
 time_t thisEpoch;
 WiFiClient  influxdbClient;   
@@ -26,7 +28,7 @@ HTTPClient  http;
 void initInfluxDB()
 {
   if ( sizeof(settingInfluxDBhostname) < 8 )  return; 
-
+ 
   snprintf(sAPIwrite, sizeof(sAPIwrite),"http://%s:%d/write?db=%s&precision=s", settingInfluxDBhostname , settingInfluxDBport, settingInfluxDBdatabasename);
   DebugTf("API influxdb: %s\r\n",sAPIwrite);
 }
@@ -46,7 +48,6 @@ void addvalueInfluxdb(char *buff, String sValue)
 //---------------------------------------------------------------
 void addvalueInfluxdb(char *buff, int32_t iValue)
 {
-  char sTmp[20];
   snprintf(sTmp, 10, "%d", iValue);
   strlcat(buff, sTmp, LINE_BUFFER);
   strlcat(buff, "i", LINE_BUFFER);  
@@ -54,7 +55,6 @@ void addvalueInfluxdb(char *buff, int32_t iValue)
 //---------------------------------------------------------------
 void addvalueInfluxdb(char *buff, uint32_t uValue)
 {
-  char sTmp[20];
   snprintf(sTmp, 10, "%u", uValue);
   strlcat(buff, sTmp, LINE_BUFFER);
   strlcat(buff, "i", LINE_BUFFER);  
@@ -62,7 +62,6 @@ void addvalueInfluxdb(char *buff, uint32_t uValue)
 //---------------------------------------------------------------
 void addvalueInfluxdb(char *buff, float fValue)
 {
-  char sTmp[20];
   snprintf(sTmp, 10, "%.3f", fValue);
   strlcat(buff, sTmp, LINE_BUFFER);
 } // addvalueInfluxdb(*char, float)
@@ -77,7 +76,6 @@ struct writeInfluxDataPoints {
       {
         if (strlen(Item::unit()) != 0) 
         {
-          char sTmp[10];
           strlcpy(buffer, Item::unit(), sizeof(buffer));                    //measurement name
           strlcat(buffer, ",instance=", sizeof(buffer));                    //addtag "instance"
           strncat_P(buffer, (PGM_P)Item::name, sizeof(buffer));             //DSMR items name = tag value
@@ -93,6 +91,7 @@ struct writeInfluxDataPoints {
             // Your Domain name with URL path or IP address with path
             http.begin(sAPIwrite);
             http.setReuse(true); //try server keep-alive to prevent rebuilding http connection
+            http.setUserAgent(F("DSMRlogger/" _SEMVER_FULL));
             const char * headerKeys[] = {"Transfer-Encoding"} ;
             http.collectHeaders(headerKeys, 1);
             // Specify content-type header
@@ -127,8 +126,8 @@ void handleInfluxDB()
     //New telegram received, let's forward that to influxDB
     lastTelegram = telegramCount;
     //Setup the timestamp for this telegram, so all points for this batch are the same.
-    thisEpoch = UTC.now();  
-    DebugTf("Writing telegram to influxdb - Epoc = %d (this) %d (NL) %d (UTC) \r\n", (int)thisEpoch, (int)localTZ.now(), (int)UTC.now());
+    thisEpoch = now()-120*60;  
+    DebugTf("Writing telegram to influxdb - Epoc = %d (now) \r\n", (int)thisEpoch);
     uint32_t timeThis = millis();
 
     DSMRdata.applyEach(writeInfluxDataPoints());

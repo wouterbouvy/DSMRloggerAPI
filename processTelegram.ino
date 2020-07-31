@@ -42,9 +42,7 @@ void processTelegram()
   }
   
   DebugTf("epoch actHour[%d] -- newHour[%d]\r\n", actT, newT);
-  DebugTf("Hour(localTZ) actHour[%02d] -- newHour[%02d]\r\n", localTZ.hour(actT), localTZ.hour(newT));
-  DebugTf("Hour(UTC TZ)  actHour[%02d] -- newHour[%02d]\r\n", UTC.hour(actT), UTC.hour(newT));
-  DebugTf("Hour(none  )  actHour[%02d] -- newHour[%02d]\r\n", hour(actT), hour(newT));
+  DebugTf("Hour(local TZ)  actHour[%02d] -- newHour[%02d]\r\n", hour(actT), hour(newT));
    //--- if we have a new hour() update the previous hour
   if (hour(actT) != hour(newT)) {
     writeToSysLog("actHour[%02d] -- newHour[%02d]", hour(actT), hour(newT));
