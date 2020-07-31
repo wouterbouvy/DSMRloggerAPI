@@ -127,9 +127,9 @@ void handleInfluxDB()
     lastTelegram = telegramCount;
     //Setup the timestamp for this telegram, so all points for this batch are the same.
     thisEpoch = UTC.now(); 
-    DebugTf("UTC epoch     : %d\r\n", (int)UTC.now());
-    DebugTf("local epoch   : %d\r\n", (int)localTZ.now());
-    DebugTf("default epoch : %d\r\n", (int)now());
+    //DebugTf("UTC epoch     : %d\r\n", (int)UTC.now());
+    //DebugTf("local epoch   : %d\r\n", (int)localTZ.now());
+    //DebugTf("default epoch : %d\r\n", (int)now());
     DebugTf("Writing telegram to influxdb - Epoc UTC = %d (now) \r\n", (int)thisEpoch);
     uint32_t timeThis = millis();
 
@@ -139,3 +139,26 @@ void handleInfluxDB()
   }
   
 }
+
+/***************************************************************************
+*
+* Permission is hereby granted, free of charge, to any person obtaining a
+* copy of this software and associated documentation files (the
+* "Software"), to deal in the Software without restriction, including
+* without limitation the rights to use, copy, modify, merge, publish,
+* distribute, sublicense, and/or sell copies of the Software, and to permit
+* persons to whom the Software is furnished to do so, subject to the
+* following conditions:
+*
+* The above copyright notice and this permission notice shall be included
+* in all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+* OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
+* OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+* THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* 
+***************************************************************************/
