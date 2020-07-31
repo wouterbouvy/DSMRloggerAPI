@@ -84,12 +84,12 @@ struct writeInfluxDataPoints {
           strlcat(buffer, " ", sizeof(buffer));                             //whitespace delimiter for epoch timestamp
           strlcat(buffer, itoa(thisEpoch, sTmp, 10), sizeof(buffer));       //add epoch timestamp
           
-          DebugT("Influxdb lineprotocol buffer: [");Debug(buffer);Debugln();
+          if (Verbose1) DebugTf("Influxdb lineprotocol buffer: [%s]\r\n",buffer);
           //Now sent the data
           if(WiFi.status()== WL_CONNECTED){
             // HTTPClient http;
             // Your Domain name with URL path or IP address with path
-            http.begin(sAPIwrite);
+            http.begin(influxdbClient, sAPIwrite);
             http.setReuse(true); //try server keep-alive to prevent rebuilding http connection
             http.setUserAgent(F("DSMRlogger/" _SEMVER_FULL));
             const char * headerKeys[] = {"Transfer-Encoding"} ;
@@ -125,12 +125,15 @@ void handleInfluxDB()
   {
     //New telegram received, let's forward that to influxDB
     lastTelegram = telegramCount;
+
     //Setup the timestamp for this telegram, so all points for this batch are the same.
     thisEpoch = UTC.now(); 
     //DebugTf("UTC epoch     : %d\r\n", (int)UTC.now());
     //DebugTf("local epoch   : %d\r\n", (int)localTZ.now());
     //DebugTf("default epoch : %d\r\n", (int)now());
+
     DebugTf("Writing telegram to influxdb - Epoc UTC = %d (now) \r\n", (int)thisEpoch);
+
     uint32_t timeThis = millis();
 
     DSMRdata.applyEach(writeInfluxDataPoints());
