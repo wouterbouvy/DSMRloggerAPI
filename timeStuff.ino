@@ -9,7 +9,6 @@
 ***************************************************************************      
 */
 
-//static time_t ntpTimeSav;
 
 //===========================================================================================
 String buildDateTimeString(const char* timeStamp, int len) 
@@ -202,6 +201,37 @@ time_t epoch(const char *timeStamp, int8_t len, bool syncTime)
   return nT;
 
 } // epoch()
+
+public bool IsDST()
+    {
+      //Determine DST for Amsterdam Timezone
+      //Posix: CET-1CEST-2,M3.5.0/02:00:00,M10.5.0/03:00:00
+      // <name TZ><time diff GMT><name TZ DST><time diff GMT DST>,<start DST date>/<time>,<end DST date>/<time> 
+      // Mm (1-12) for 12 months
+      // n (1-5) 1 for the first week and 5 for the last week in the month
+      // d (0-6) 0 for Sunday and 6 for Saturday
+
+      //Oftewel zomertijd vanaf laatste zondag vanaf 2:00u tot laatste zondag van oktober vanaf 3:00
+
+
+        //Het is winterwijd als tussen oktober en maart, oftewel nov, dec, jan, feb.
+        if (month() < 3 || month() > 10) { return false; }
+        //Het is wintertijds als tussen maart en oktober, oftewel april, mei, juni, juli, september
+        if (month() > 3 && month() < 10) { return true; }
+        //Dan moeten we nog bepalen of het de laatste zondag van de maand is (dat is wat 5 betekend)
+        int previousSunday = day() - weekday();
+        //In maart, is het zomertijd de laatste zondag is en het is na 2:00
+        if (month() == 3 && previousSunday > 21) { return (hour()>=2); }
+        //In oktober is het wintertijd als het de laatste zondag is en na 3:00
+        return (previousSunday > 21 && hour()>=3);
+    }
+
+int8_t OffsetDST()
+{
+    //return offset in minutes based on DST to UTC
+    if isDST() return -120;  
+    return -60;
+}
 
 
 /***************************************************************************

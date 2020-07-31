@@ -126,7 +126,7 @@ void handleInfluxDB()
     //New telegram received, let's forward that to influxDB
     lastTelegram = telegramCount;
     //Setup the timestamp for this telegram, so all points for this batch are the same.
-    thisEpoch = now()-120*60;  
+    thisEpoch = now() + OffsetDST() * SECS_PER_MIN;  
     DebugTf("Writing telegram to influxdb - Epoc = %d (now) \r\n", (int)thisEpoch);
     uint32_t timeThis = millis();
 
