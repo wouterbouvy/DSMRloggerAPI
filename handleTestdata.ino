@@ -1,7 +1,7 @@
 /* 
 ***************************************************************************  
 **  Program  : handleTestdata.ino, part of DSMRlogger-Next
-**  Version  : v2.1.0-rc0
+**  Version  : v2.1.1-rc1
 **
 **  Copyright (c) 2020 Willem Aandewiel
 **
