@@ -202,7 +202,7 @@ time_t epoch(const char *timeStamp, int8_t len, bool syncTime)
 
 } // epoch()
 
-public bool IsDST()
+bool isDST()
     {
       //Determine DST for Amsterdam Timezone
       //Posix: CET-1CEST-2,M3.5.0/02:00:00,M10.5.0/03:00:00
@@ -229,7 +229,7 @@ public bool IsDST()
 int8_t OffsetDST()
 {
     //return offset in minutes based on DST to UTC
-    if isDST() return -120;  
+    if (isDST()) return -120;  
     return -60;
 }
 
