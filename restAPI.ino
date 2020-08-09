@@ -65,6 +65,7 @@ void processAPI()
                                   , URI
                                   , ESP.getFreeHeap() );
     httpServer.send(500, "text/plain", "500: internal server error (low heap)\r\n");
+    ESP.reset(); //due to low memory, let's restart.
     return;
   }
 

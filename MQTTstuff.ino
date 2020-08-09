@@ -214,18 +214,19 @@ void sendMQTTData()
 #ifdef USE_MQTT
   String dateTime, topicId, json;
 
-  if (settingMQTTinterval == 0) return;
+  if (settingMQTTinterval == 0) return;   // 0 == turned off
 
   if (ESP.getFreeHeap() < 7000) // to prevent firmware from crashing!
   {
     DebugTf("==> Bailout due to low heap (%d bytes)\r\n",   ESP.getFreeHeap() );
     writeToSysLog("==> Bailout low heap (%d bytes)", ESP.getFreeHeap() );
+    ESP.reset(); //due to low memory, let's restart.
     return;
   }
 
   //Only send data when there is a new telegram
   static uint32_t lastTelegram = 0;
-  if ((telegramCount - lastTelegram)> 0)
+  if (telegramCount != lastTelegram)
   {
       //New telegram received, let's forward that to influxDB
       lastTelegram = telegramCount;
