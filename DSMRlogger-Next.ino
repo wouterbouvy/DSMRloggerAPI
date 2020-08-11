@@ -280,7 +280,9 @@ void setup()
 
 //================ Start ezTime ===================================
   DebugTln("before UTC TZ     : " + UTC.dateTime());
-  DebugT("Wait for timesync");
+  DebugTln("Wait for timesync");
+  updateNTP();
+  setInterval(600);  //every 10 minutes
   waitForSync();
   localTZ.setLocation("Europe/Amsterdam");
   localTZ.setDefault();
