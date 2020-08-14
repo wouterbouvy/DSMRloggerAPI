@@ -53,7 +53,7 @@ void writeLastStatus()
   {
     DebugTf("Bailout due to low heap (%d bytes)\r\n", ESP.getFreeHeap());
     writeToSysLog("Bailout low heap (%d bytes)", ESP.getFreeHeap());
-    ESP.reset(); //due to low memory, let's restart.
+    esp_reboot(); //due to low memory, let's restart.
     return;
   }
   

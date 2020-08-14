@@ -180,14 +180,21 @@ static String escapeJSONString(String &value) {
 }
 //=======================================================================        
 
-void ESPreboot()
+void esp_reboot()
 { 
   //wait 3 seconds, and then reboot.
+  DebugT("Reboot in 3 seconds");
+  delay(1000);Debug(".");
+  delay(1000);Debug(".");
+  delay(1000);Debugln(".");
   WiFi.forceSleepBegin(); //stop wifi 
-  delay(3000);
+  ESP.restart();          //soft reset
   //wdt_reset(); ESP.restart(); while(1)wdt_reset();
-  ESP.restart(); //soft reset
   //ESP.reset(); //hard reset
+  // restart() doesn't always end execution
+  while (1) {
+    yield();
+  }
 }
 
 /***************************************************************************

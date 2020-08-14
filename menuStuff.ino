@@ -197,8 +197,7 @@ void handleKeyInput()
                     WiFi.disconnect(true);  // deletes credentials !
                     //setupWiFi(true);
                     delay(2000);
-                    ESP.reset();
-                    delay(2000);
+                    esp_reboot();
                     break;
       case 'i':
       case 'I':     for(int I=0; I<10; I++) 
@@ -225,7 +224,7 @@ void handleKeyInput()
                     delay(3000);
                     DebugTln(F("now Rebooting. \r"));
                     DebugFlush();
-                    ESP.reset();
+                    esp_reboot();
                     break;
       case 's':
       case 'S':     listSPIFFS();

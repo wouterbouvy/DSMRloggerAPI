@@ -310,7 +310,7 @@ void setup()
       oled_Print_Msg(3, "Reboot DSMR-logger", 2000);        //USE_NTP
     }                                                       //USE_NTP
     delay(2000);                                            //USE_NTP
-    ESP.restart();                                          //USE_NTP
+    esp_reboot();                                          //USE_NTP
     delay(3000);                                            //USE_NTP
   }                                                         //USE_NTP
   if (settingOledType > 0)                                  //USE_NTP

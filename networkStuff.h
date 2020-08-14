@@ -93,7 +93,7 @@ void startWiFi(const char* hostname, int timeOut)
 
     //reset and try again, or maybe put it to deep sleep
     //delay(3000);
-    //ESP.reset();
+    //esp_reboot();
     //delay(2000);
     DebugTf(" took [%d] seconds ==> ERROR!\r\n", (millis() - lTime) / 1000);
     return;
