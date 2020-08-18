@@ -5,17 +5,22 @@
 #include "version.h"
 #define _FW_VERSION _VERSION
 /*
-**  Based on the original:
-**          DSMRLoggerAPI - Copyright (c) 2020 Willem Aandewiel
-**
 **  The Next development:  
 **          DSMRlogger-Next - Copyright (c) 2020 Robert van den Breemen
 **
 **  To go beyond the original with new features and fixing some issues.  
 **
+**  Based on the original:
+**          DSMRLoggerAPI - Copyright (c) 2020 Willem Aandewiel
+**
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************      
-*      
+*
+* DSMRlogger-Next instructions:
+* -   Install InfluxDBclient library    (https://github.com/tobiasschuerg/InfluxDB-Client-for-Arduino)
+* -   Install ezTime library            (https://github.com/ropg/ezTime)
+*
+***************************************************************************      
   Arduino-IDE settings for DSMR-logger Version 4 (ESP-12):
 
     - Board: "Generic ESP8266 Module"

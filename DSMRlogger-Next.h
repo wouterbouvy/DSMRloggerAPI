@@ -3,7 +3,10 @@
 **  Program  : DSMRlogger-Next.h - definitions for DSMRlogger-Next
 **  Version  : v2.1.1-rc1
 **
-**  Copyright (c) 2020 Willem Aandewiel
+**  Copyright (c) 2020 Robert van den Breemen
+**
+**  Based on the original:
+**          DSMRLoggerAPI - Copyright (c) 2020 Willem Aandewiel
 **
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************      

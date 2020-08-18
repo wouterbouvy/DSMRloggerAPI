@@ -191,7 +191,7 @@ void esp_reboot()
   ESP.restart();          //soft reset
   //wdt_reset(); ESP.restart(); while(1)wdt_reset();
   //ESP.reset(); //hard reset
-  // restart() doesn't always end execution
+  //restart() doesn't always end execution
   while (1) {
     yield();
   }
