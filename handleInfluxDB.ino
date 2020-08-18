@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : handleInfluxDB - part of DSMRlogger-Next
-**  Version  : v2.1.2-rc1
+**  Version  : v2.1.2-rc2
 **
 **  Copyright (c) 2020 Robert van den Breemen
 **
