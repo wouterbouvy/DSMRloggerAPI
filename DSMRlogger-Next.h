@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : DSMRlogger-Next.h - definitions for DSMRlogger-Next
-**  Version  : v2.1.1-rc1
+**  Version  : v2.1.2-rc1
 **
 **  Copyright (c) 2020 Robert van den Breemen
 **
